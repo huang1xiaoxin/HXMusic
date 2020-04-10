@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:scrollbars="none"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.youth.banner.Banner
+                android:layout_gravity="center"
+                android:id="@+id/ll_adevert_bar"
+                android:layout_width="300dp"
+                android:layout_height="150dp"
+                />
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_local_music"
+                    style="@style/ButtonStyle"
+                    android:layout_marginRight="60dp"
+                    android:drawableTop="@drawable/local_music"
+                    android:text="本地音乐" />
+
+                <Button
+                    android:id="@+id/bt_like_music"
+                    style="@style/ButtonStyle"
+                    android:layout_marginRight="60dp"
+                    android:drawableTop="@drawable/like"
+                    android:text="我喜欢" />
+
+                <Button
+                    android:id="@+id/bt_history_music"
+                    style="@style/ButtonStyle"
+                    android:drawableTop="@drawable/play_history"
+                    android:text="播放记录" />
+            </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_marginTop="10dp"
+                android:padding="4dp"
+                card_view:cardCornerRadius="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                >
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/history_text_title"
+                        android:textColor="@color/text_title_color"
+                        android:text="最近播放"
+                        android:textSize="18sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <Button
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/bt_more_history"
+                        android:text="更多"
+                        android:background="@drawable/bt_shape"
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_marginTop="10dp"
+                android:padding="4dp"
+                card_view:cardCornerRadius="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/like_text_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="我喜欢"
+                        android:textColor="@color/text_title_color"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/bt_more_like"
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/bt_shape"
+                        android:text="更多" />
+
+                </RelativeLayout>
+
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_marginTop="10dp"
+                android:padding="4dp"
+                card_view:cardCornerRadius="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/song_list_text_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="热门歌单"
+                        android:textColor="@color/text_title_color"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/bt_more_song_list"
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/bt_shape"
+                        android:text="更多" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

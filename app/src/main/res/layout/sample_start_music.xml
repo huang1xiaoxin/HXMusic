@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:padding="4dp"
+    android:layout_height="50dp">
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vp_change_song"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"/>
+    <ImageButton
+        android:id="@+id/ib_start_stop"
+        android:background="@drawable/circular_shape"
+        android:layout_width="40dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/start"
+        android:scaleType="fitCenter"
+        android:layout_height="40dp"/>
+    <ImageButton
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/circular_shape"
+        android:layout_width="40dp"
+        android:src="@drawable/current_list"
+        android:scaleType="fitCenter"
+        android:layout_height="40dp"/>
+
+
+</LinearLayout>
