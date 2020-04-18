@@ -6,61 +6,76 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.telecom.ConnectionService;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
 import com.huangxin.hxmusic.R;
+import com.huangxin.hxmusic.activity.adapter.MyMusicViewPager;
 import com.huangxin.hxmusic.activity.adapter.MyPagerAdapter;
 import com.huangxin.hxmusic.base.BasePager;
-import com.huangxin.hxmusic.databinding.ActivityMainBinding;
 import com.huangxin.hxmusic.findpager.pager.FindPager;
 import com.huangxin.hxmusic.mvpager.pager.MVPager;
 import com.huangxin.hxmusic.mymusic.fragment.MyMusicPager;
 import com.huangxin.hxmusic.service.MyService;
+import com.huangxin.hxmusic.utils.Song;
 
-import java.nio.channels.InterruptedByTimeoutException;
 import java.util.ArrayList;
-
-import static com.huangxin.hxmusic.R.layout.activity_main;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<BasePager> pagerArrayList;
-    private  ActivityMainBinding binding;
     private int index;
     private MyService.MusicBinder musicBinder;
     private final static String TAG="MainActivity";
-
-
+    private ViewPager viewPager;
+    private RadioGroup radioGroup;
+    private MyMusicPager myMusicPager;
+    private ImageButton startAndStopButton;
+    private ViewPager changeSongViewPage;
+    private LinearLayout sampleStartLinearLayout;
+    private MyMusicViewPager musicViewPager;
+    private List<Song> songList;
+    private boolean isRestartActivity=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding =  ActivityMainBinding.inflate(LayoutInflater.from(this));
-        View view = binding.getRoot();
-        setContentView(view);
+        setContentView(R.layout.activity_main);
+        //先获取bundle对象，然后再通过Bundle对象获得MusicBinder对象
+        Bundle musicBundle= getIntent().getBundleExtra("MusicBundle");
+        musicBinder=(MyService.MusicBinder)musicBundle.getBinder("MusicBinder");
         initViewPager();
         initPermission();
-        binding.amViewpager.setAdapter(new MyPagerAdapter(pagerArrayList));
-        binding.amViewpager.addOnPageChangeListener(new MyOnPageChangeListener());
-        binding.radioGroup.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        binding.radioGroup.check(R.id.rb_my_music);
-
+        viewPager=findViewById(R.id.am_viewpager);
+        radioGroup=findViewById(R.id.radio_group);
+        viewPager.setAdapter(new MyPagerAdapter(pagerArrayList));
+        viewPager.addOnPageChangeListener(new MyOnPageChangeListener());
+        radioGroup.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        radioGroup.check(R.id.rb_my_music);
+        startAndStopButton=findViewById(R.id.ib_start_stop);
+        changeSongViewPage=findViewById(R.id.vp_change_song);
+        sampleStartLinearLayout =findViewById(R.id.ly_sample_start_music);
+        sampleStartLinearLayout.setVisibility(View.GONE);
+        musicViewPager=new MyMusicViewPager(songList,MainActivity.this,musicBinder);
+        changeSongViewPage.addOnPageChangeListener(new MyMusicOnPageChangeListener());
+        startAndStopButton.setOnClickListener(new MyMainActivityOnClickListener());
+        musicBinder.setUpdateInfoInMainActivity(new MyService.UpdateInfoInMainActivity() {
+            @Override
+            public void updateInfo(int index) {
+                changeSongViewPage.setCurrentItem(index,false);
+            }
+        });
     }
     /**
      * 初始化各个页面
      */
     public void initViewPager(){
         pagerArrayList=new ArrayList<>();
-        pagerArrayList.add(new MyMusicPager(this));
+        myMusicPager=new MyMusicPager(this,musicBinder);
+        pagerArrayList.add(myMusicPager);
         pagerArrayList.add(new FindPager(this));
         pagerArrayList.add(new MVPager(this));
     }
@@ -105,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         break;
                 }
-                binding.radioGroup.check(id);
+                radioGroup.check(id);
             }
 
         }
@@ -124,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     index=2;
                     break;
             }
-            binding.amViewpager.setCurrentItem(index,false);
+            viewPager.setCurrentItem(index,false);
 
         }
     }
@@ -144,7 +159,79 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public MyService.MusicBinder getMusicBinder() {
-        return musicBinder;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (musicBinder.getPlayMusicList()!=null&&musicBinder.getPlayMusicList().size()>0){
+            sampleStartLinearLayout.setVisibility(View.VISIBLE);
+            songList=musicBinder.getPlayMusicList();
+            musicViewPager.setSongs(songList);
+            changeSongViewPage.setAdapter(musicViewPager);
+        }
+        if (isRestartActivity){
+            changeSongViewPage.setCurrentItem(musicBinder.getCurrentIndex(),false);
+            isRestartActivity=false;
+            if (musicBinder.isPlaying()){
+                startAndStopButton.setImageResource(R.drawable.stop);
+            }else {
+                startAndStopButton.setImageResource(R.drawable.start);
+            }
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        isRestartActivity=true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        musicBinder.setMainActivityShow(true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        musicBinder.setMainActivityShow(false);
+    }
+    private class MyMusicOnPageChangeListener implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (!isRestartActivity){
+                changeSongViewPage.setCurrentItem(position,false);
+                musicBinder.startPlayer(position);
+                startAndStopButton.setImageResource(R.drawable.stop);
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    }
+
+    private class MyMainActivityOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.ib_start_stop:
+                    if (musicBinder.isPlaying()){
+                        musicBinder.pauseMusic();
+                        startAndStopButton.setImageResource(R.drawable.start);
+                    }else {
+                        musicBinder.startMusic();
+                        startAndStopButton.setImageResource(R.drawable.stop);
+                    }
+                    break;
+                default:break;
+            }
+        }
     }
 }

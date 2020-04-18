@@ -40,7 +40,7 @@
                     android:id="@+id/bt_like_music"
                     style="@style/ButtonStyle"
                     android:layout_marginRight="60dp"
-                    android:drawableTop="@drawable/like"
+                    android:drawableTop="@drawable/like_loacl"
                     android:text="我喜欢" />
 
                 <Button

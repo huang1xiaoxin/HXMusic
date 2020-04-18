@@ -1,8 +1,10 @@
 package com.huangxin.hxmusic.activity.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.huangxin.hxmusic.R;
+import com.huangxin.hxmusic.activity.DetailMusicActivity;
 import com.huangxin.hxmusic.imageloader.ImageResizer;
+import com.huangxin.hxmusic.mymusic.LocalMusicActivity;
+import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.Song;
 
 import java.util.List;
@@ -22,10 +27,12 @@ public class MyMusicViewPager extends PagerAdapter{
 
         private List<Song> songs;
         private Context context;
+        private MyService.MusicBinder musicBinder;
 
-        public MyMusicViewPager(List<Song> songs, Context context){
+        public MyMusicViewPager(List<Song> songs, Context context, MyService.MusicBinder musicBinder){
             this.songs=songs;
             this.context=context;
+            this.musicBinder=musicBinder;
         }
         @Override
         public int getCount() {
@@ -58,6 +65,16 @@ public class MyMusicViewPager extends PagerAdapter{
             }else {
                 imageView.setImageResource(R.drawable.default_image);
             }
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent=new Intent(context, DetailMusicActivity.class);
+                    Bundle bundle=new Bundle();
+                    bundle.putBinder("MusicBinder",musicBinder);
+                    intent.putExtra("MusicBundle",bundle);
+                    context.startActivity(intent);
+                }
+            });
             container.addView(view);
             return view;
         }
@@ -69,6 +86,5 @@ public class MyMusicViewPager extends PagerAdapter{
         public List<Song> getSongs() {
             return songs;
         }
-
 
 }

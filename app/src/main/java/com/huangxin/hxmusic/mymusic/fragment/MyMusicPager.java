@@ -35,30 +35,12 @@ public class MyMusicPager extends BasePager {
     private Button loaclMusicButton;
     private Button likeMusicButton;
     private Button historyMusicButton;
-
     private MyService.MusicBinder musicBinder;
-    //服务连接，通过回调的方法获得Binder的类
-    //当Context初始化没有完成的时候，不会执行onServiceConnected
-    private ServiceConnection serviceConnection=new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.e(TAG,"服务已绑定");
-            //获得MusicBinder的对象
-            musicBinder=(MyService.MusicBinder)service;
-            // myMusicPager.setMediaPlayerBinder(musicBinder);
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
 
-    public MyMusicPager(Context mContext) {
+    public MyMusicPager(Context mContext, MyService.MusicBinder musicBinder) {
         super(mContext);
-        //绑定服务
-        Intent intent=new Intent(context,MyService.class);
-        // BIND_AUTO_CREATE代表若服务不存在实例则创建实例
-        context.bindService(intent,serviceConnection,BIND_AUTO_CREATE);
+        this.musicBinder=musicBinder;
     }
 
     @Override
@@ -131,5 +113,4 @@ public class MyMusicPager extends BasePager {
             }
         }
     }
-
 }

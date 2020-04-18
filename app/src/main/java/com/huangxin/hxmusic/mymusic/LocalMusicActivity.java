@@ -1,16 +1,12 @@
 package com.huangxin.hxmusic.mymusic;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -26,11 +22,13 @@ import com.huangxin.hxmusic.utils.Song;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LocalMusicActivity extends AppCompatActivity {
 
 
-    public List<Song> songList=new ArrayList<>();
+    public List<Song> songList;
     private ListView listView;
     private ProgressBar progressBar;
     private TextView textView;
@@ -40,22 +38,25 @@ public class LocalMusicActivity extends AppCompatActivity {
     private MyMusicViewPager adapter;
     private int songIndex;
     public ImageButton startAndStopButton;
+    private boolean isOnRestartUpdateViewPage=false;
+    private boolean isPlayingFromMainActivity=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loacl_music);
+        songList=new ArrayList<>();
         //先获取bundle对象，然后再通过Bundle对象获得MusicBinder对象
         Bundle musicBundle= getIntent().getBundleExtra("MusicBundle");
         musicBinder=(MyService.MusicBinder)musicBundle.getBinder("MusicBinder");
         //设置播放的列表
-        musicBinder.setPlayMusicList(songList);
+        assert musicBinder != null;
         listView=findViewById(R.id.lm_list_view);
         progressBar=findViewById(R.id.lm_pb);
         textView=findViewById(R.id.lm_text);
         viewPager=findViewById(R.id.vp_change_song);
         startAndStopButton=findViewById(R.id.ib_start_stop);
-        adapter =new MyMusicViewPager(songList,getApplicationContext());
+        adapter =new MyMusicViewPager(songList,getApplicationContext(),musicBinder);
         viewPager.setAdapter(adapter);
         LoadingAsyncTask asyncTask=new LoadingAsyncTask();
         //开始执行
@@ -63,12 +64,27 @@ public class LocalMusicActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new MyOnItemClickListener());
         viewPager.addOnPageChangeListener(new MyAddOnPageChangeListener());
         startAndStopButton.setOnClickListener(new MyOnClickListener());
+        musicBinder.setUpdateInfoInLocalActivity(new MyService.UpdateInfoInLocalActivity() {
+            @Override
+            public void updateInfo(int index) {
+                viewPager.setCurrentItem(index,false);
+            }
+        });
+        if (musicBinder.getPlayMusicList()!=null&&musicBinder.getPlayMusicList().size()>0){
+            adapter.setSongs(musicBinder.getPlayMusicList());
+            viewPager.setAdapter(adapter);
+            if (musicBinder.isPlaying()){
+                startAndStopButton.setImageResource(R.drawable.stop);
+            }else {
+                startAndStopButton.setImageResource(R.drawable.start);
+            }
+            isPlayingFromMainActivity=true;
+            isOnRestartUpdateViewPage=true;
+            viewPager.setCurrentItem(musicBinder.getCurrentIndex(),false);
+        }
+
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
     class LoadingAsyncTask extends AsyncTask<Void,Void,List<Song>>{
         //在任务开始前，主线程
         @Override
@@ -113,6 +129,7 @@ public class LocalMusicActivity extends AppCompatActivity {
                 //更新列表
                 Log.e(TAG,"更新底部的歌曲数据");
                 adapter.setSongs(songList);
+                musicBinder.setPlayMusicList(songList);
                 adapter.notifyDataSetChanged();
             }
             //更新ViewPager
@@ -121,7 +138,28 @@ public class LocalMusicActivity extends AppCompatActivity {
 
         }
     }
+    //当重新退回到当前Activity时，更新底部的ViewPager
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        isOnRestartUpdateViewPage=true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isOnRestartUpdateViewPage){
+            viewPager.setCurrentItem(musicBinder.getCurrentIndex(),false);
+            if (musicBinder.isPlaying()){
+                startAndStopButton.setImageResource(R.drawable.stop);
+            }else {
+                startAndStopButton.setImageResource(R.drawable.start);
+            }
+            isOnRestartUpdateViewPage=false;
+        }
+        musicBinder.setLocalActivityShow(true);
+    }
 
     private class MyAddOnPageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
@@ -133,9 +171,12 @@ public class LocalMusicActivity extends AppCompatActivity {
 
         @Override
         public void onPageSelected(int position) {
-            viewPager.setCurrentItem(position,false);
-            musicBinder.startPlayer(songList.get(position).getUrl());
-            startAndStopButton.setImageResource(R.drawable.stop);
+            if (!isOnRestartUpdateViewPage||!isPlayingFromMainActivity){
+                viewPager.setCurrentItem(position,false);
+                musicBinder.startPlayer(position);
+                startAndStopButton.setImageResource(R.drawable.stop);
+            }
+            isPlayingFromMainActivity=false;
         }
 
         @Override
@@ -143,6 +184,13 @@ public class LocalMusicActivity extends AppCompatActivity {
 
 
         }
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        musicBinder.setLocalActivityShow(false);
     }
 
     private class MyOnClickListener implements View.OnClickListener {
@@ -158,6 +206,7 @@ public class LocalMusicActivity extends AppCompatActivity {
                         startAndStopButton.setImageResource(R.drawable.stop);
                     }
                     break;
+
                 default:
                     break;
             }
