@@ -1,27 +1,18 @@
 package com.huangxin.hxmusic.mymusic.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ImageReader;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaRecorder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.huangxin.hxmusic.R;
-import com.huangxin.hxmusic.imageloader.ImageResizer;
 import com.huangxin.hxmusic.utils.Song;
 
 import java.util.List;
-import java.util.logging.Handler;
 
 public class ListViewAdapter extends ArrayAdapter<Song> {
     private int resourceId;
@@ -31,6 +22,14 @@ public class ListViewAdapter extends ArrayAdapter<Song> {
         super(context, resource,  objects);
         this.resourceId=resource;
         listSong=objects;
+    }
+
+    public List<Song> getListSong() {
+        return listSong;
+    }
+
+    public void setListSong(List<Song> listSong) {
+        this.listSong = listSong;
     }
 
     @NonNull

@@ -21,6 +21,7 @@ import com.huangxin.hxmusic.mymusic.LocalMusicActivity;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.Song;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyMusicViewPager extends PagerAdapter{
@@ -34,7 +35,9 @@ public class MyMusicViewPager extends PagerAdapter{
             this.context=context;
             this.musicBinder=musicBinder;
         }
-        @Override
+
+
+    @Override
         public int getCount() {
             return songs.size();
         }

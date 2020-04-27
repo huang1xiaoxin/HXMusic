@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
+import com.huangxin.hxmusic.PopupWindow.ShowPopupWindow;
 import com.huangxin.hxmusic.R;
 import com.huangxin.hxmusic.activity.adapter.MyMusicViewPager;
 import com.huangxin.hxmusic.activity.adapter.MyPagerAdapter;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private MyMusicViewPager musicViewPager;
     private List<Song> songList;
     private boolean isRestartActivity=false;
+    private ImageButton currentSongList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         radioGroup.check(R.id.rb_my_music);
         startAndStopButton=findViewById(R.id.ib_start_stop);
         changeSongViewPage=findViewById(R.id.vp_change_song);
+        currentSongList=findViewById(R.id.current_list_pw);
         sampleStartLinearLayout =findViewById(R.id.ly_sample_start_music);
         sampleStartLinearLayout.setVisibility(View.GONE);
         musicViewPager=new MyMusicViewPager(songList,MainActivity.this,musicBinder);
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 changeSongViewPage.setCurrentItem(index,false);
             }
         });
+        currentSongList.setOnClickListener(new MyMainActivityOnClickListener());
     }
     /**
      * 初始化各个页面
@@ -131,11 +136,16 @@ public class MainActivity extends AppCompatActivity {
             switch (checkedId){
                 default:
                     index=0;
+                    myMusicPager.getBanner().start();
                     break;
                 case R.id.rb_find_music:
+                    //当现实其他页面的时候停止切换
+                    myMusicPager.getBanner().stop();
                     index=1;
                     break;
                 case R.id.rb_mv:
+                    //当现实其他页面的时候停止切换
+                    myMusicPager.getBanner().stop();
                     index=2;
                     break;
             }
@@ -143,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
     //动态申请存储读取的权限
     private void initPermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE )!=
@@ -158,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
             },1);
         }
     }
+
 
     @Override
     protected void onStart() {
@@ -178,19 +191,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
     @Override
     protected void onRestart() {
         super.onRestart();
         isRestartActivity=true;
     }
-
     @Override
     protected void onResume() {
         super.onResume();
         musicBinder.setMainActivityShow(true);
+        if (myMusicPager!=null&&myMusicPager.getBanner()!=null){
+            myMusicPager.getBanner().start();
+        }
     }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -199,9 +212,7 @@ public class MainActivity extends AppCompatActivity {
     private class MyMusicOnPageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
         }
-
         @Override
         public void onPageSelected(int position) {
             if (!isRestartActivity){
@@ -210,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
                 startAndStopButton.setImageResource(R.drawable.stop);
             }
         }
-
         @Override
         public void onPageScrollStateChanged(int state) {
 
@@ -230,8 +240,23 @@ public class MainActivity extends AppCompatActivity {
                         startAndStopButton.setImageResource(R.drawable.stop);
                     }
                     break;
+                case R.id.current_list_pw:
+                    //显示弹窗
+                    new ShowPopupWindow().setMusicBinder(musicBinder).setSongList(musicBinder.getPlayMusicList())
+                            .setContext(MainActivity.this).showPopupWindow(v);
                 default:break;
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        myMusicPager.getBanner().stop();
     }
 }

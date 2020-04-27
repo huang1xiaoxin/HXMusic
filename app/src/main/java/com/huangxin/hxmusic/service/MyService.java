@@ -10,7 +10,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.huangxin.hxmusic.utils.ModelInterface;
+import com.huangxin.hxmusic.Database.DataDo;
+import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class MyService extends Service {
         }
     }
      public class MusicBinder extends Binder{
-         private  int CurrentIndex;
+         private  int CurrentIndex=-1;
          //歌曲播放的列表
          private int modelTag=3;
          private List<Song> playMusicList;
@@ -54,6 +55,9 @@ public class MyService extends Service {
                  mediaPlayer.setDataSource(playMusicList.get(index).getUrl());
                  mediaPlayer.prepare();
                  mediaPlayer.start();
+                 //添加播放历史的音乐
+                 DataDo.getInstance(getApplicationContext()).addMusicData(ConstInterface.HISTORY_MUSIC_TABLE,
+                         playMusicList.get(index));
              } catch (IOException e) {
                  Log.e(TAG,"播放失败");
                  e.printStackTrace();
@@ -63,7 +67,7 @@ public class MyService extends Service {
                  @Override
                  public void onCompletion(MediaPlayer mp) {
                      //播放完成
-                     if (modelTag==ModelInterface.REPEAT_PLAy){
+                     if (modelTag== ConstInterface.REPEAT_PLAy){
                          startPlayer(getCurrentIndex());
                      }else{
                          nextSong();
@@ -92,12 +96,12 @@ public class MyService extends Service {
              if (playMusicList!=null){
                  //重置资源
                  mediaPlayer.reset();
-                 if (modelTag== ModelInterface.LIST_PLAY||modelTag==ModelInterface.REPEAT_PLAy){
+                 if (modelTag== ConstInterface.LIST_PLAY||modelTag== ConstInterface.REPEAT_PLAy){
                      CurrentIndex++;
                      if(CurrentIndex>=playMusicList.size()){
                          CurrentIndex=0;
                      }
-                 }else if (modelTag==ModelInterface.RANDOM_PLAY){
+                 }else if (modelTag== ConstInterface.RANDOM_PLAY){
                       CurrentIndex=(int)(Math.random()*playMusicList.size()) ;
                       if(CurrentIndex>playMusicList.size()-1){
                           CurrentIndex=playMusicList.size()-1;
@@ -114,12 +118,12 @@ public class MyService extends Service {
              if (mediaPlayer!=null){
                  //重置资源
                  mediaPlayer.reset();
-                 if (modelTag== ModelInterface.LIST_PLAY||modelTag==ModelInterface.REPEAT_PLAy){
+                 if (modelTag== ConstInterface.LIST_PLAY||modelTag== ConstInterface.REPEAT_PLAy){
                      CurrentIndex--;
                      if(CurrentIndex<0){
                          CurrentIndex=playMusicList.size()-1;
                      }
-                 }else if (modelTag==ModelInterface.RANDOM_PLAY){
+                 }else if (modelTag== ConstInterface.RANDOM_PLAY){
                      CurrentIndex=(int) (Math.random()*playMusicList.size());
                      if(CurrentIndex>playMusicList.size()-1){
                          CurrentIndex=playMusicList.size()-1;

@@ -19,6 +19,7 @@
         android:scaleType="fitCenter"
         android:layout_height="40dp"/>
     <ImageButton
+        android:id="@+id/current_list_pw"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:background="@drawable/circular_shape"

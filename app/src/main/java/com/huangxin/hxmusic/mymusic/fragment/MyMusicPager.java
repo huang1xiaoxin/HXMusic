@@ -36,7 +36,7 @@ public class MyMusicPager extends BasePager {
     private Button likeMusicButton;
     private Button historyMusicButton;
     private MyService.MusicBinder musicBinder;
-
+    private Banner banner;
 
     public MyMusicPager(Context mContext, MyService.MusicBinder musicBinder) {
         super(mContext);
@@ -52,7 +52,7 @@ public class MyMusicPager extends BasePager {
     }
 
     private void initViewData(View view) {
-        Banner banner=view.findViewById(R.id.ll_adevert_bar);
+        banner=view.findViewById(R.id.ll_adevert_bar);
         //设置指示器
         banner.setIndicator(new CircleIndicator(context));
         //设置指示器的位置
@@ -68,6 +68,8 @@ public class MyMusicPager extends BasePager {
         banner.setAdapter(new ImageAdapter(initImageList(),context));
         //设置圆弧
         banner.setBannerRound(20);
+        //开始轮播
+        banner.start();
         loaclMusicButton=view.findViewById(R.id.bt_local_music);
         likeMusicButton=view.findViewById(R.id.bt_like_music);
         historyMusicButton=view.findViewById(R.id.bt_history_music);
@@ -88,7 +90,6 @@ public class MyMusicPager extends BasePager {
         list.add(R.drawable.image2);
         list.add(R.drawable.image3);
         list.add(R.drawable.image4);
-
         return list;
     }
 
@@ -96,21 +97,28 @@ public class MyMusicPager extends BasePager {
     private class MyButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            Intent intent=new Intent(context, LocalMusicActivity.class);
+            Bundle bundle=new Bundle();
+            bundle.putBinder("MusicBinder",musicBinder);
+            intent.putExtra("MusicBundle",bundle);
             switch (v.getId()){
                 case R.id.bt_local_music:
-                    Intent intent=new Intent(context, LocalMusicActivity.class);
-                    Bundle bundle=new Bundle();
-                    bundle.putBinder("MusicBinder",musicBinder);
-                    intent.putExtra("MusicBundle",bundle);
-                    context.startActivity(intent);
+                    intent.putExtra("tag",1);
                     break;
                 case R.id.bt_like_music:
+                    intent.putExtra("tag",2);
                     break;
                 case R.id.bt_history_music:
+                    intent.putExtra("tag",3);
                     break;
                 default:
                     break;
             }
+            context.startActivity(intent);
         }
+    }
+
+    public Banner getBanner() {
+        return banner;
     }
 }

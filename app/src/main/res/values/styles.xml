@@ -26,7 +26,11 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">14sp</item>
     </style>
-
+    <!-- PopupWindow的动画-->
+    <style name="MyPopupWIndow_Anim">
+        <item name="android:windowEnterAnimation"> @anim/popup_window_show</item>
+        <item name="android:windowHideAnimation">@anim/popup_window_hidden</item>
+    </style>
 
 
 </resources>

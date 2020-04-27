@@ -13,17 +13,20 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.huangxin.hxmusic.Database.DataDo;
+import com.huangxin.hxmusic.PopupWindow.ShowPopupWindow;
 import com.huangxin.hxmusic.R;
+import com.huangxin.hxmusic.activity.MainActivity;
 import com.huangxin.hxmusic.activity.adapter.MyMusicViewPager;
 import com.huangxin.hxmusic.mymusic.adapter.ListViewAdapter;
 import com.huangxin.hxmusic.mymusic.scanmusic.ScanMusic;
 import com.huangxin.hxmusic.service.MyService;
+import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class LocalMusicActivity extends AppCompatActivity {
 
@@ -38,8 +41,12 @@ public class LocalMusicActivity extends AppCompatActivity {
     private MyMusicViewPager adapter;
     private int songIndex;
     public ImageButton startAndStopButton;
-    private boolean isOnRestartUpdateViewPage=false;
-    private boolean isPlayingFromMainActivity=false;
+    private boolean isOnStartUpdateViewPage =false;
+    private int activityTag=1;
+    private TextView tipText;
+    private boolean isRestart=false;
+    private ListViewAdapter listViewAdapter;
+    private ImageButton currentSongListButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +56,25 @@ public class LocalMusicActivity extends AppCompatActivity {
         //先获取bundle对象，然后再通过Bundle对象获得MusicBinder对象
         Bundle musicBundle= getIntent().getBundleExtra("MusicBundle");
         musicBinder=(MyService.MusicBinder)musicBundle.getBinder("MusicBinder");
+        activityTag=getIntent().getIntExtra("tag",1);
         //设置播放的列表
         assert musicBinder != null;
         listView=findViewById(R.id.lm_list_view);
         progressBar=findViewById(R.id.lm_pb);
         textView=findViewById(R.id.lm_text);
         viewPager=findViewById(R.id.vp_change_song);
-        startAndStopButton=findViewById(R.id.ib_start_stop);
         adapter =new MyMusicViewPager(songList,getApplicationContext(),musicBinder);
         viewPager.setAdapter(adapter);
-        LoadingAsyncTask asyncTask=new LoadingAsyncTask();
-        //开始执行
-        asyncTask.execute();
+        startAndStopButton=findViewById(R.id.ib_start_stop);
+        tipText=findViewById(R.id.tv_tip);
         listView.setOnItemClickListener(new MyOnItemClickListener());
         viewPager.addOnPageChangeListener(new MyAddOnPageChangeListener());
         startAndStopButton.setOnClickListener(new MyOnClickListener());
+        currentSongListButton=findViewById(R.id.current_list_pw);
+        currentSongListButton.setOnClickListener(new MyOnClickListener());
+        LoadingAsyncTask asyncTask=new LoadingAsyncTask();
+        //开始执行
+        asyncTask.execute(activityTag);
         musicBinder.setUpdateInfoInLocalActivity(new MyService.UpdateInfoInLocalActivity() {
             @Override
             public void updateInfo(int index) {
@@ -72,20 +83,70 @@ public class LocalMusicActivity extends AppCompatActivity {
         });
         if (musicBinder.getPlayMusicList()!=null&&musicBinder.getPlayMusicList().size()>0){
             adapter.setSongs(musicBinder.getPlayMusicList());
-            viewPager.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
             if (musicBinder.isPlaying()){
                 startAndStopButton.setImageResource(R.drawable.stop);
             }else {
                 startAndStopButton.setImageResource(R.drawable.start);
             }
-            isPlayingFromMainActivity=true;
-            isOnRestartUpdateViewPage=true;
+            isOnStartUpdateViewPage =true;
             viewPager.setCurrentItem(musicBinder.getCurrentIndex(),false);
         }
-
+        isRestart=false;
     }
 
-    class LoadingAsyncTask extends AsyncTask<Void,Void,List<Song>>{
+    /**
+     * 列表的点击事件
+     */
+    private class MyOnItemClickListener implements android.widget.AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (songList.size()>0){
+                songList.clear();
+            }
+            //主要是让listViewAdapter.getListSong()是不同的引用
+            copyArrayList();
+            //更新列表
+            Log.e(TAG,"更新底部的歌曲数据");
+            adapter.setSongs(songList);
+            musicBinder.setPlayMusicList(songList);
+            adapter.notifyDataSetChanged();
+            //更新ViewPager
+            viewPager.setCurrentItem(position,false);
+        }
+    }
+
+    private void copyArrayList() {
+        for (int i=0;i<listViewAdapter.getListSong().size();i++){
+            songList.add(listViewAdapter.getListSong().get(i));
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        isRestart=true;
+
+        listViewAdapter.clear();
+        LoadingAsyncTask asyncTask=new LoadingAsyncTask();
+        //开始执行
+        asyncTask.execute(activityTag);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (musicBinder.getPlayMusicList()!=null&&musicBinder.getPlayMusicList().size()>0&& isRestart){
+            adapter.setSongs(musicBinder.getPlayMusicList());
+            adapter.notifyDataSetChanged();
+            isRestart=false;
+        }
+        isOnStartUpdateViewPage =true;
+    }
+
+
+    class LoadingAsyncTask extends AsyncTask<Integer,Void,List<Song>>{
+
         //在任务开始前，主线程
         @Override
         protected void onPreExecute() {
@@ -95,68 +156,52 @@ public class LocalMusicActivity extends AppCompatActivity {
         }
         //在后台执行
         @Override
-        protected List<Song> doInBackground(Void... voids) {
+        protected List<Song> doInBackground(Integer... integers) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return new ScanMusic().ScanMusicList(getContentResolver());
+            if (integers[0] == 1){
+                //本地歌曲
+                return new ScanMusic().ScanMusicList(getContentResolver());
+            }else if (integers[0]==2){
+                //我喜欢
+                return DataDo.getInstance(getApplicationContext()).getAllMusicFromTable(ConstInterface.LIKE_MUSIC_TABLE);
+            }else {
+                //音乐播放记录
+                return DataDo.getInstance(getApplicationContext()).getAllMusicFromTable(ConstInterface.HISTORY_MUSIC_TABLE);
+            }
         }
         //在任务结束后，主线程
         @Override
         protected void onPostExecute(List<Song> songs) {
             super.onPostExecute(songs);
-            songList.clear();
-            songList=songs;
             Log.e(TAG,"加载本地歌曲");
-            ListViewAdapter adapter=new ListViewAdapter(getApplicationContext(),
-                    R.layout.list_view_item,songList);
-            listView.setAdapter(adapter);
+            listViewAdapter=new ListViewAdapter(getApplicationContext(),
+                    R.layout.list_view_item,songs);
+            listView.setAdapter(listViewAdapter);
             progressBar.setVisibility(View.GONE);
             textView.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * 列表的点击事件
-     */
-    private class MyOnItemClickListener implements android.widget.AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            if(adapter.getSongs()!=songList){
-                //更新列表
-                Log.e(TAG,"更新底部的歌曲数据");
-                adapter.setSongs(songList);
-                musicBinder.setPlayMusicList(songList);
-                adapter.notifyDataSetChanged();
+            if (songs.size()<=0){
+                tipText.setVisibility(View.VISIBLE);
             }
-            //更新ViewPager
-            viewPager.setCurrentItem(position,false);
-
-
         }
     }
-    //当重新退回到当前Activity时，更新底部的ViewPager
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        isOnRestartUpdateViewPage=true;
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isOnRestartUpdateViewPage){
+        if (isOnStartUpdateViewPage){
+            //处理从其他页面跳转过来的时候设置底部的ui
             viewPager.setCurrentItem(musicBinder.getCurrentIndex(),false);
             if (musicBinder.isPlaying()){
                 startAndStopButton.setImageResource(R.drawable.stop);
             }else {
                 startAndStopButton.setImageResource(R.drawable.start);
             }
-            isOnRestartUpdateViewPage=false;
+            isOnStartUpdateViewPage =false;
         }
         musicBinder.setLocalActivityShow(true);
     }
@@ -164,25 +209,18 @@ public class LocalMusicActivity extends AppCompatActivity {
     private class MyAddOnPageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-
-
         }
-
         @Override
         public void onPageSelected(int position) {
-            if (!isOnRestartUpdateViewPage||!isPlayingFromMainActivity){
+            //防止是从别的地方跳转过来，重新播放设置了ViewPage，然后重新播放
+            if (!isOnStartUpdateViewPage){
                 viewPager.setCurrentItem(position,false);
                 musicBinder.startPlayer(position);
                 startAndStopButton.setImageResource(R.drawable.stop);
             }
-            isPlayingFromMainActivity=false;
         }
-
         @Override
         public void onPageScrollStateChanged(int state) {
-
-
         }
     }
 
@@ -206,7 +244,11 @@ public class LocalMusicActivity extends AppCompatActivity {
                         startAndStopButton.setImageResource(R.drawable.stop);
                     }
                     break;
-
+                case  R.id.current_list_pw:
+                    //显示弹窗
+                   new  ShowPopupWindow().setMusicBinder(musicBinder).setSongList(musicBinder.getPlayMusicList())
+                            .setContext(LocalMusicActivity.this).showPopupWindow(v);
+                    break;
                 default:
                     break;
             }
