@@ -1,8 +1,5 @@
 package com.huangxin.hxmusic.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,6 +10,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.huangxin.hxmusic.Database.DataDo;
 import com.huangxin.hxmusic.PopupWindow.ShowPopupWindow;
@@ -42,32 +42,32 @@ public class DetailMusicActivity extends AppCompatActivity {
     private TextView durationText;
     private ImageView imageView;
 
-    private  int currentIndex;
+    private final String TAG = "DetailMusicActivity";
     private List<Song> songList;
-    private int modelTag=1;
+    private int currentIndex;
     private ImageButton backButton;
     private SeekBar seekBar;
-    private boolean addLike=true;
+    private int modelTag = 1;
     private Timer timer;
-
-    //启动计时更新进度条
-    private TimerTask timerTask=new TimerTask() {
-        @Override
-        public void run() {
-            //正在播放音乐的时候更新进度条
-            if (musicBinder.isPlaying()){
-               handler.sendEmptyMessage(1);
-            }
-        }
-    };
-    private Handler handler=new Handler(){
+    private boolean addLike = true;
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if (msg.what==1){
+            if (msg.what == 1) {
                 seekBar.setProgress(musicBinder.getCurrentProgress());
             }
 
+        }
+    };
+    //启动计时更新进度条
+    private TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            //正在播放音乐的时候更新进度条
+            if (musicBinder.isPlaying()) {
+                handler.sendEmptyMessage(1);
+            }
         }
     };
     private ImageButton currentSongListButton;
@@ -76,40 +76,40 @@ public class DetailMusicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_music);
-        timer=new Timer();
-        Intent intent=getIntent();
-        Bundle bundle=intent.getBundleExtra("MusicBundle");
+        timer = new Timer();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("MusicBundle");
         assert bundle != null;
-        musicBinder= (MyService.MusicBinder) bundle.getBinder("MusicBinder");
+        musicBinder = (MyService.MusicBinder) bundle.getBinder("MusicBinder");
         musicBinder.setUpdateInfoListener(new MyService.UpdateInfoListener() {
             @Override
             public void updateInfo(int index) {
                 initInfo();
             }
         });
-        currentIndex=musicBinder.getCurrentIndex();
-        songList=musicBinder.getPlayMusicList();
+        currentIndex = musicBinder.getCurrentIndex();
+        songList = musicBinder.getPlayMusicList();
         initView();
         //开启计时器
-        timer.schedule(timerTask,0,500);
+        timer.schedule(timerTask, 0, 500);
     }
 
     private void initView() {
-        nextButton=findViewById(R.id.next_song_ib);
-        lastButton=findViewById(R.id.last_song_ib);
-        startAndStopButton=findViewById(R.id.ib_start_stop_ib);
-        playMode=findViewById(R.id.play_model_ib);
-        songListButton=findViewById(R.id.song_list_ib);
-        addLikeButton=findViewById(R.id.like_bt);
-        artistText=findViewById(R.id.artist_tv);
-        titleText=findViewById(R.id.title_tv);
-        updateText=findViewById(R.id.time_update_tv);
-        durationText =findViewById(R.id.duration_tv);
-        imageView=findViewById(R.id.iv_image);
-        backButton=findViewById(R.id.ib_back);
-        seekBar=findViewById(R.id.seekBar3);
+        nextButton = findViewById(R.id.next_song_ib);
+        lastButton = findViewById(R.id.last_song_ib);
+        startAndStopButton = findViewById(R.id.ib_start_stop_ib);
+        playMode = findViewById(R.id.play_model_ib);
+        songListButton = findViewById(R.id.song_list_ib);
+        addLikeButton = findViewById(R.id.like_bt);
+        artistText = findViewById(R.id.artist_tv);
+        titleText = findViewById(R.id.title_tv);
+        updateText = findViewById(R.id.time_update_tv);
+        durationText = findViewById(R.id.duration_tv);
+        imageView = findViewById(R.id.iv_image);
+        backButton = findViewById(R.id.ib_back);
+        seekBar = findViewById(R.id.seekBar3);
         initInfo();
-        modelTag=musicBinder.getModelTag();
+        modelTag = musicBinder.getModelTag();
         //设置播放模式的样式
         setModelImage();
         startAndStopButton.setOnClickListener(new MyOnClickListener());
@@ -123,17 +123,17 @@ public class DetailMusicActivity extends AppCompatActivity {
     }
 
     private void initInfo() {
-        if (musicBinder.getPlayMusicList().size()>0){
-            currentIndex=musicBinder.getCurrentIndex();
-            Bitmap bitmap=songList.get(currentIndex).loadingBitmap(songList.get(currentIndex).getUrl(),250,250);
-            if (bitmap!=null){
+        if (musicBinder.getPlayMusicList().size() > 0) {
+            currentIndex = musicBinder.getCurrentIndex();
+            Bitmap bitmap = songList.get(currentIndex).loadingBitmap(songList.get(currentIndex).getUrl(), 250, 250);
+            if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
-            }else {
+            } else {
                 imageView.setImageResource(R.drawable.default_image);
             }
-            if (musicBinder.isPlaying()){
+            if (musicBinder.isPlaying()) {
                 startAndStopButton.setImageResource(R.drawable.stop_music);
-            }else {
+            } else {
                 startAndStopButton.setImageResource(R.drawable.start_music);
             }
             artistText.setText(songList.get(currentIndex).getArtist());
@@ -142,31 +142,59 @@ public class DetailMusicActivity extends AppCompatActivity {
             seekBar.setMax((int) songList.get(currentIndex).getDuration());
             seekBar.setProgress(musicBinder.getCurrentProgress());
             updateText.setText(formatDate(musicBinder.getCurrentProgress()));
-            if (DataDo.getInstance(getApplicationContext()).isExitsTable(ConstInterface.LIKE_MUSIC_TABLE,songList.get(currentIndex))){
+            if (DataDo.getInstance(getApplicationContext()).isExitsTable(ConstInterface.LIKE_MUSIC_TABLE, songList.get(currentIndex))) {
                 addLikeButton.setImageResource(R.drawable.like);
-                addLike=true;
-            }else{
+                addLike = true;
+            } else {
                 addLikeButton.setImageResource(R.drawable.dislike);
-                addLike=false;
+                addLike = false;
             }
         }
 
     }
 
-    class  MyOnClickListener implements  View.OnClickListener{
+    private void setModelImage() {
+        switch (musicBinder.getModelTag()) {
+            case ConstInterface
+                    .RANDOM_PLAY:
+                musicBinder.setModelTag(ConstInterface.RANDOM_PLAY);
+                playMode.setImageResource(R.drawable.random_paly);
+                break;
+            case ConstInterface.REPEAT_PLAy:
+                musicBinder.setModelTag(ConstInterface.REPEAT_PLAy);
+                playMode.setImageResource(R.drawable.repeat_play);
+                break;
+
+            case ConstInterface.LIST_PLAY:
+                musicBinder.setModelTag(ConstInterface.LIST_PLAY);
+                playMode.setImageResource(R.drawable.list_play);
+                break;
+            default:
+                break;
+        }
+    }
+
+    //时间格式化
+    private String formatDate(long progress) {
+        Date date = new Date(progress);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
+        return simpleDateFormat.format(date);
+    }
+
+    class MyOnClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.ib_start_stop_ib:
-                    if (musicBinder.isPlaying()){
+                    if (musicBinder.isPlaying()) {
                         musicBinder.pauseMusic();
                         startAndStopButton.setImageResource(R.drawable.start_music);
-                    }else {
+                    } else {
                         musicBinder.startMusic();
                         startAndStopButton.setImageResource(R.drawable.stop_music);
                     }
-                break;
+                    break;
                 case R.id.next_song_ib:
                     musicBinder.nextSong();
                     initInfo();
@@ -177,26 +205,27 @@ public class DetailMusicActivity extends AppCompatActivity {
                     break;
                 case R.id.play_model_ib:
                     modelTag++;
-                    if(modelTag>3){
-                        modelTag=1;
+                    if (modelTag > 3) {
+                        modelTag = 1;
                     }
+                    musicBinder.setModelTag(modelTag);
                     setModelImage();
                     break;
                 case R.id.ib_back:
                     finish();
                     break;
                 case R.id.like_bt:
-                    if (addLike==true){
+                    if (addLike == true) {
                         addLikeButton.setImageResource(R.drawable.dislike);
-                        addLike=false;
-                    }else {
+                        addLike = false;
+                    } else {
                         addLikeButton.setImageResource(R.drawable.like);
-                        addLike=true;
+                        addLike = true;
                     }
-                    if (addLike){
+                    if (addLike) {
                         DataDo.getInstance(getApplicationContext()).addMusicData(ConstInterface.LIKE_MUSIC_TABLE
-                        ,songList.get(currentIndex));
-                    }else{
+                                , songList.get(currentIndex));
+                    } else {
                         DataDo.getInstance(getApplicationContext()).deleteSong(ConstInterface.LIKE_MUSIC_TABLE,
                                 songList.get(currentIndex));
 
@@ -204,35 +233,24 @@ public class DetailMusicActivity extends AppCompatActivity {
                     break;
                 case R.id.song_list_ib:
                     //显示弹窗
-                    new ShowPopupWindow().setMusicBinder(musicBinder).setSongList(musicBinder.getPlayMusicList())
+                    ShowPopupWindow showPopupWindow = new ShowPopupWindow();
+                    showPopupWindow.setMusicBinder(musicBinder).setSongList(musicBinder.getPlayMusicList())
                             .setContext(DetailMusicActivity.this).showPopupWindow(v);
+                    showPopupWindow.setDetailMusicActivity(true);
+                    //回调播放模式改变
+                    showPopupWindow.setPlayModelUpdateListener(new ShowPopupWindow.PlayModelUpdateListener() {
+                        @Override
+                        public void update() {
+                            setModelImage();
+                        }
+                    });
+
                     break;
                 default:
                     break;
             }
 
 
-        }
-    }
-
-    private void setModelImage() {
-        switch (modelTag){
-            case ConstInterface
-                    .RANDOM_PLAY:
-                musicBinder.setModelTag(ConstInterface.RANDOM_PLAY);
-             playMode.setImageResource(R.drawable.random_paly);
-             break;
-            case ConstInterface.REPEAT_PLAy:
-                musicBinder.setModelTag(ConstInterface.REPEAT_PLAy);
-                playMode.setImageResource(R.drawable.repeat_play);
-                break;
-
-            case ConstInterface.LIST_PLAY:
-                    musicBinder.setModelTag(ConstInterface.LIST_PLAY);
-                    playMode.setImageResource(R.drawable.list_play);
-                    break;
-            default:
-                break;
         }
     }
 
@@ -243,20 +261,17 @@ public class DetailMusicActivity extends AppCompatActivity {
             //更新时间
             updateText.setText(formatDate(progress));
         }
+
         //开始滑动
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
         }
+
         //停止滑动
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             musicBinder.setStartMusicSeekTo(seekBar.getProgress());
         }
     }
-    //时间格式化
-    private String formatDate(long progress) {
-        Date date=new Date(progress);
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("mm:ss");
-        return simpleDateFormat.format(date);
-    }
+
 }

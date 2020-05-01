@@ -3,7 +3,6 @@ package com.huangxin.hxmusic.PopupWindow;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,16 +13,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.huangxin.hxmusic.R;
-import com.huangxin.hxmusic.mymusic.adapter.ListViewAdapter;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.Song;
 import com.huangxin.hxmusic.utils.UpdateBottomViewPager;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
@@ -32,6 +27,7 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
     private List<Song> songList;
     private MyService.MusicBinder musicBinder;
     private final String TAG=" PopupWindowListViewAdapter";
+    private UpdateSizeTextListener updateSizeTextListener;
     public PopupWindowListViewAdapter(@NonNull Context context, int resource, @NonNull List<Song> objects) {
         super(context, resource, objects);
         this.context=context;
@@ -77,6 +73,7 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
                 }
                 //更新底部的ViewPager
                 UpdateBottomViewPager.getINSTANCE().updateBottomViewPageListener.updateViewPager();
+                updateSizeTextListener.updateSizeText();
                 Log.e(TAG, "onClick: 移当前播放列表中的歌曲:"+song.getTitle());
             }
         });
@@ -99,4 +96,13 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
         ImageButton removeButton;
         LinearLayout linearLayout;
     }
+
+    public void setUpdateSizeTextListener(UpdateSizeTextListener updateSizeTextListener) {
+        this.updateSizeTextListener = updateSizeTextListener;
+    }
+
+    public interface UpdateSizeTextListener {
+        void updateSizeText();
+    }
+
 }

@@ -9,7 +9,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 
 import com.huangxin.hxmusic.R;
 import com.huangxin.hxmusic.service.MyService;
+import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
 
 import java.util.List;
@@ -26,6 +26,10 @@ public class ShowPopupWindow {
     private MyService.MusicBinder musicBinder;
     private List<Song> songList;
     private Context context;
+    private ImageButton playModelImageButton;
+    private int modelTag;
+    private boolean isDetailMusicActivity = false;
+    private PlayModelUpdateListener playModelUpdateListener;
     public void showPopupWindow(View view){
         //获取屏幕的宽和高
         DisplayMetrics dm =context.getResources().getDisplayMetrics();
@@ -33,19 +37,31 @@ public class ShowPopupWindow {
         int height=dm.widthPixels;
         View contentView= LayoutInflater.from(context).inflate(R.layout.popup_window_layout,null);
         ListView listView=contentView.findViewById(R.id.list_view_pw);
-        ImageButton imageButton=contentView.findViewById(R.id.imageButton);
-        TextView countText=contentView.findViewById(R.id.pd_count);
+        playModelImageButton = contentView.findViewById(R.id.pw_model_play_ib);
+        final TextView countText = contentView.findViewById(R.id.pd_count);
         countText.setText("("+songList.size()+")");
         PopupWindowListViewAdapter adapter=new PopupWindowListViewAdapter(context,R.layout.popup_window_listview_item,songList);
         adapter.setMusicBinder(musicBinder);
         listView.setAdapter(adapter);
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        initPlayModelButton();
+        playModelImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //设置点击事件
+                modelTag++;
+                if (modelTag > 3) {
+                    modelTag = 1;
+                }
+                musicBinder.setModelTag(modelTag);
+                initPlayModelButton();
             }
         });
-
+        adapter.setUpdateSizeTextListener(new PopupWindowListViewAdapter.UpdateSizeTextListener() {
+            @Override
+            public void updateSizeText() {
+                countText.setText("(" + songList.size() + ")");
+            }
+        });
         PopupWindow popupWindow=new PopupWindow(contentView,width-60,height,true);
         popupWindow.setTouchable(true);
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
@@ -63,8 +79,42 @@ public class ShowPopupWindow {
         popupWindow.setAnimationStyle(R.style.MyPopupWIndow_Anim);
         //设置在底部弹出
         popupWindow.showAtLocation(view, Gravity.BOTTOM,0,0);
+        //设置弹窗消失时点的事件，用于更新详情页的播放模式
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
+
+            @Override
+            public void onDismiss() {
+                //其他页面不更新
+                if (isDetailMusicActivity) {
+                    playModelUpdateListener.update();
+                }
+            }
+        });
         Log.e(TAG, " 弹出窗口显示" );
     }
+
+    /**
+     * 更据已设置的播放模式，来更改设置按钮的样式
+     */
+    private void initPlayModelButton() {
+        switch (musicBinder.getModelTag()) {
+            case ConstInterface.LIST_PLAY:
+                //列表播放
+                playModelImageButton.setImageResource(R.drawable.list_play_text);
+                break;
+            case ConstInterface.RANDOM_PLAY:
+                //随机播放
+                playModelImageButton.setImageResource(R.drawable.random_paly_text);
+                break;
+            case ConstInterface.REPEAT_PLAy:
+                playModelImageButton.setImageResource(R.drawable.single_play_text);
+                //单曲循环
+                break;
+        }
+        modelTag = musicBinder.getModelTag();
+    }
+
     public ShowPopupWindow setMusicBinder(MyService.MusicBinder musicBinder){
         this.musicBinder=musicBinder;
         return this;
@@ -79,4 +129,18 @@ public class ShowPopupWindow {
         return  this;
     }
 
+    public void setDetailMusicActivity(boolean detailMusicActivity) {
+        isDetailMusicActivity = detailMusicActivity;
+    }
+
+    public void setPlayModelUpdateListener(PlayModelUpdateListener playModelUpdateListener) {
+        this.playModelUpdateListener = playModelUpdateListener;
+    }
+
+    /**
+     * 更新播放模式的接口
+     */
+    public interface PlayModelUpdateListener {
+        void update();
+    }
 }
