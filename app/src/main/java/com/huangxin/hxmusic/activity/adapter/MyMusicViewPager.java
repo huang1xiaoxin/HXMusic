@@ -89,5 +89,9 @@ public class MyMusicViewPager extends PagerAdapter{
         public List<Song> getSongs() {
             return songs;
         }
-
+        //防止在更新数据时失效
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            return POSITION_NONE;
+        }
 }

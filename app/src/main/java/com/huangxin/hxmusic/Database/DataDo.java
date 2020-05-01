@@ -44,6 +44,10 @@ public class DataDo {
         if (song==null){
             return;
         }
+        //判断是否已经存在在数据库中 如果存在则直接返回
+        if(isExitsTable(TAG,song)){
+            return;
+        }
         String title=song.getTitle();
         String artist=song.getArtist();
         String size=song.getSize();

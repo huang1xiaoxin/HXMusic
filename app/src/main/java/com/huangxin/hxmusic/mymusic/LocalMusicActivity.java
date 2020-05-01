@@ -23,6 +23,7 @@ import com.huangxin.hxmusic.mymusic.scanmusic.ScanMusic;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
+import com.huangxin.hxmusic.utils.UpdateBottomViewPager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +48,14 @@ public class LocalMusicActivity extends AppCompatActivity {
     private boolean isRestart=false;
     private ListViewAdapter listViewAdapter;
     private ImageButton currentSongListButton;
+    private UpdateBottomViewPager.UpdateBottomViewPageListener listener=new UpdateBottomViewPager.UpdateBottomViewPageListener() {
+        @Override
+        public void updateViewPager() {
+            adapter.notifyDataSetChanged();
+            Log.e(TAG, "updateViewPager: 更新底部播放栏的数据" );
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +102,8 @@ public class LocalMusicActivity extends AppCompatActivity {
             viewPager.setCurrentItem(musicBinder.getCurrentIndex(),false);
         }
         isRestart=false;
+
+
     }
 
     /**
@@ -204,6 +215,8 @@ public class LocalMusicActivity extends AppCompatActivity {
             isOnStartUpdateViewPage =false;
         }
         musicBinder.setLocalActivityShow(true);
+        //设置在弹窗中更改数据时 更新ViewPager
+        UpdateBottomViewPager.getINSTANCE().registerUpdateBottomViewPageListener(listener);
     }
 
     private class MyAddOnPageChangeListener implements ViewPager.OnPageChangeListener {
@@ -229,6 +242,8 @@ public class LocalMusicActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         musicBinder.setLocalActivityShow(false);
+        //取消注册
+        UpdateBottomViewPager.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
     }
 
     private class MyOnClickListener implements View.OnClickListener {
@@ -254,4 +269,5 @@ public class LocalMusicActivity extends AppCompatActivity {
             }
         }
     }
+
 }
