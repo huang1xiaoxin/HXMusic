@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import com.huangxin.hxmusic.R;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.Song;
-import com.huangxin.hxmusic.utils.UpdateBottomViewPager;
+import com.huangxin.hxmusic.utils.UpdateDataInfo;
 
 import java.util.List;
 
@@ -69,10 +69,17 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
                 }else if (position==musicBinder.getCurrentIndex()){
                     //下一首歌曲
                     musicBinder.setCurrentIndex(musicBinder.getCurrentIndex()-1);
-                    musicBinder.nextSong();
+                    if (musicBinder.isPlaying()) {
+                        musicBinder.nextSong();
+                    } else {
+                        //如果前音乐暂停播放的时候，切换下一首歌曲时也应该暂停播放
+                        musicBinder.nextSong();
+                        musicBinder.pauseMusic();
+                    }
+
                 }
                 //更新底部的ViewPager
-                UpdateBottomViewPager.getINSTANCE().updateBottomViewPageListener.updateViewPager();
+                UpdateDataInfo.getINSTANCE().updateDataInfoListener.updateInfo();
                 updateSizeTextListener.updateSizeText();
                 Log.e(TAG, "onClick: 移当前播放列表中的歌曲:"+song.getTitle());
             }

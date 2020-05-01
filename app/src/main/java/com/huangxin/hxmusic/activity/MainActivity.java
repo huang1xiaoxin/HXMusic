@@ -1,10 +1,5 @@
 package com.huangxin.hxmusic.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -13,6 +8,11 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import com.huangxin.hxmusic.PopupWindow.ShowPopupWindow;
 import com.huangxin.hxmusic.R;
@@ -24,7 +24,7 @@ import com.huangxin.hxmusic.mvpager.pager.MVPager;
 import com.huangxin.hxmusic.mymusic.fragment.MyMusicPager;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.Song;
-import com.huangxin.hxmusic.utils.UpdateBottomViewPager;
+import com.huangxin.hxmusic.utils.UpdateDataInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private List<Song> songList;
     private boolean isRestartActivity=false;
     private ImageButton currentSongList;
-    private UpdateBottomViewPager.UpdateBottomViewPageListener listener=new UpdateBottomViewPager.UpdateBottomViewPageListener() {
+    private UpdateDataInfo.UpdateDataInfoListener listener = new UpdateDataInfo.UpdateDataInfoListener() {
         @Override
-        public void updateViewPager() {
+        public void updateInfo() {
             musicViewPager.notifyDataSetChanged();
             Log.e(TAG, "updateViewPager: 更新底部播放栏的数据" );
 
@@ -212,13 +212,13 @@ public class MainActivity extends AppCompatActivity {
         if (myMusicPager!=null&&myMusicPager.getBanner()!=null){
             myMusicPager.getBanner().start();
         }
-        UpdateBottomViewPager.getINSTANCE().registerUpdateBottomViewPageListener(listener);
+        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);
     }
     @Override
     protected void onStop() {
         super.onStop();
         musicBinder.setMainActivityShow(false);
-        UpdateBottomViewPager.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
+        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
     }
     private class MyMusicOnPageChangeListener implements ViewPager.OnPageChangeListener {
         @Override

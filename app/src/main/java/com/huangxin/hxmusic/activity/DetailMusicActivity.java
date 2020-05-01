@@ -20,6 +20,7 @@ import com.huangxin.hxmusic.R;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
+import com.huangxin.hxmusic.utils.UpdateDataInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,7 +29,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class DetailMusicActivity extends AppCompatActivity {
-
+    private final String TAG = "DetailMusicActivity";
     private MyService.MusicBinder musicBinder;
     private ImageButton nextButton;
     private ImageButton lastButton;
@@ -41,8 +42,6 @@ public class DetailMusicActivity extends AppCompatActivity {
     private TextView updateText;
     private TextView durationText;
     private ImageView imageView;
-
-    private final String TAG = "DetailMusicActivity";
     private List<Song> songList;
     private int currentIndex;
     private ImageButton backButton;
@@ -50,6 +49,12 @@ public class DetailMusicActivity extends AppCompatActivity {
     private int modelTag = 1;
     private Timer timer;
     private boolean addLike = true;
+    UpdateDataInfo.UpdateDataInfoListener updateDataInfoListener = new UpdateDataInfo.UpdateDataInfoListener() {
+        @Override
+        public void updateInfo() {
+            initInfo();
+        }
+    };
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -57,7 +62,6 @@ public class DetailMusicActivity extends AppCompatActivity {
             if (msg.what == 1) {
                 seekBar.setProgress(musicBinder.getCurrentProgress());
             }
-
         }
     };
     //启动计时更新进度条
@@ -92,6 +96,7 @@ public class DetailMusicActivity extends AppCompatActivity {
         initView();
         //开启计时器
         timer.schedule(timerTask, 0, 500);
+
     }
 
     private void initView() {
@@ -150,7 +155,6 @@ public class DetailMusicActivity extends AppCompatActivity {
                 addLike = false;
             }
         }
-
     }
 
     private void setModelImage() {
@@ -179,6 +183,18 @@ public class DetailMusicActivity extends AppCompatActivity {
         Date date = new Date(progress);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
         return simpleDateFormat.format(date);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(updateDataInfoListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(updateDataInfoListener);
     }
 
     class MyOnClickListener implements View.OnClickListener {
@@ -244,7 +260,6 @@ public class DetailMusicActivity extends AppCompatActivity {
                             setModelImage();
                         }
                     });
-
                     break;
                 default:
                     break;

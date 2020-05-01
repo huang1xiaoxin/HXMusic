@@ -1,8 +1,5 @@
 package com.huangxin.hxmusic.mymusic;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,20 +10,21 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
 import com.huangxin.hxmusic.Database.DataDo;
 import com.huangxin.hxmusic.PopupWindow.ShowPopupWindow;
 import com.huangxin.hxmusic.R;
-import com.huangxin.hxmusic.activity.MainActivity;
 import com.huangxin.hxmusic.activity.adapter.MyMusicViewPager;
 import com.huangxin.hxmusic.mymusic.adapter.ListViewAdapter;
 import com.huangxin.hxmusic.mymusic.scanmusic.ScanMusic;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
-import com.huangxin.hxmusic.utils.UpdateBottomViewPager;
+import com.huangxin.hxmusic.utils.UpdateDataInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class LocalMusicActivity extends AppCompatActivity {
@@ -48,9 +46,9 @@ public class LocalMusicActivity extends AppCompatActivity {
     private boolean isRestart=false;
     private ListViewAdapter listViewAdapter;
     private ImageButton currentSongListButton;
-    private UpdateBottomViewPager.UpdateBottomViewPageListener listener=new UpdateBottomViewPager.UpdateBottomViewPageListener() {
+    private UpdateDataInfo.UpdateDataInfoListener listener = new UpdateDataInfo.UpdateDataInfoListener() {
         @Override
-        public void updateViewPager() {
+        public void updateInfo() {
             adapter.notifyDataSetChanged();
             Log.e(TAG, "updateViewPager: 更新底部播放栏的数据" );
 
@@ -216,7 +214,7 @@ public class LocalMusicActivity extends AppCompatActivity {
         }
         musicBinder.setLocalActivityShow(true);
         //设置在弹窗中更改数据时 更新ViewPager
-        UpdateBottomViewPager.getINSTANCE().registerUpdateBottomViewPageListener(listener);
+        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);
     }
 
     private class MyAddOnPageChangeListener implements ViewPager.OnPageChangeListener {
@@ -243,7 +241,7 @@ public class LocalMusicActivity extends AppCompatActivity {
         super.onStop();
         musicBinder.setLocalActivityShow(false);
         //取消注册
-        UpdateBottomViewPager.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
+        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
     }
 
     private class MyOnClickListener implements View.OnClickListener {
