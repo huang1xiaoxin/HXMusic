@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,6 +63,11 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
         viewHolder.removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //当之后一首歌曲的时候不做处理
+                if (songList.size() == 1) {
+                    Toast.makeText(context, "主人,别点啦,再点就没有啦", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 songList.remove(position);
                 notifyDataSetChanged();
                 if (position<musicBinder.getCurrentIndex()){

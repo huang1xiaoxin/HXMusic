@@ -3,7 +3,6 @@ package com.huangxin.hxmusic.activity.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +15,9 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.huangxin.hxmusic.R;
 import com.huangxin.hxmusic.activity.DetailMusicActivity;
-import com.huangxin.hxmusic.imageloader.ImageResizer;
-import com.huangxin.hxmusic.mymusic.LocalMusicActivity;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.Song;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyMusicViewPager extends PagerAdapter{
@@ -94,4 +90,5 @@ public class MyMusicViewPager extends PagerAdapter{
         public int getItemPosition(@NonNull Object object) {
             return POSITION_NONE;
         }
+
 }

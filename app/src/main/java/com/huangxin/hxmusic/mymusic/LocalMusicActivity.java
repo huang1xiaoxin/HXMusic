@@ -49,6 +49,7 @@ public class LocalMusicActivity extends AppCompatActivity {
     private UpdateDataInfo.UpdateDataInfoListener listener = new UpdateDataInfo.UpdateDataInfoListener() {
         @Override
         public void updateInfo() {
+            isOnStartUpdateViewPage = true;
             adapter.notifyDataSetChanged();
             Log.e(TAG, "updateViewPager: 更新底部播放栏的数据" );
 
@@ -119,9 +120,15 @@ public class LocalMusicActivity extends AppCompatActivity {
             Log.e(TAG,"更新底部的歌曲数据");
             adapter.setSongs(songList);
             musicBinder.setPlayMusicList(songList);
+            isOnStartUpdateViewPage = false;
             adapter.notifyDataSetChanged();
             //更新ViewPager
             viewPager.setCurrentItem(position,false);
+            if (position == 0) {
+                //点击第一项时出现无法播放的bug
+                musicBinder.startPlayer(position);
+                startAndStopButton.setImageResource(R.drawable.stop);
+            }
         }
     }
 
@@ -228,6 +235,7 @@ public class LocalMusicActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(position,false);
                 musicBinder.startPlayer(position);
                 startAndStopButton.setImageResource(R.drawable.stop);
+                isOnStartUpdateViewPage = false;
             }
         }
         @Override
