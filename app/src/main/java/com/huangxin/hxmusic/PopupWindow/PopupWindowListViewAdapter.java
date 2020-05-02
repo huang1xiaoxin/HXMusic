@@ -62,7 +62,7 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UpdateDataInfo.getINSTANCE().updateDataInfoListener.updateInfo(position);
+                UpdateDataInfo.getINSTANCE().updateDataInfoListener.startMusicWhenClick(position);
                 //设置背景
                 notifyDataSetChanged();
                 Log.e(TAG, "onClick: 播放歌曲" + songList.get(position).getTitle());

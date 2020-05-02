@@ -51,13 +51,13 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "updateViewPager: 更新底部播放栏的数据");
 
         }
-    };
-    private UpdateDataInfo.UpdateDataInfoListener onListViewClickItemListener = new UpdateDataInfo.UpdateDataInfoListener() {
+
         @Override
-        public void updateInfo(int position) {
+        public void startMusicWhenClick(int position) {
             changeSongViewPager.setCurrentItem(position, false);
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
             myMusicPager.getBanner().start();
         }
         UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);
-        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(onListViewClickItemListener);
     }
 
     @Override
@@ -160,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         musicBinder.setMainActivityShow(false);
         UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
-        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(onListViewClickItemListener);
     }
 
     @Override

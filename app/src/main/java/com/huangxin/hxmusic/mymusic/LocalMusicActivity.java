@@ -53,14 +53,12 @@ public class LocalMusicActivity extends AppCompatActivity {
             Log.e(TAG, "updateViewPager: 更新底部播放栏的数据" );
 
         }
-    };
-    private UpdateDataInfo.UpdateDataInfoListener onListViewClickItemListener = new UpdateDataInfo.UpdateDataInfoListener() {
+
         @Override
-        public void updateInfo(int position) {
+        public void startMusicWhenClick(int position) {
             viewPager.setCurrentItem(position, false);
         }
     };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,7 +152,6 @@ public class LocalMusicActivity extends AppCompatActivity {
         musicBinder.setLocalActivityShow(true);
         //设置在弹窗中更改数据时 更新ViewPager
         UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);
-        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(onListViewClickItemListener);
     }
 
     @Override
@@ -163,7 +160,6 @@ public class LocalMusicActivity extends AppCompatActivity {
         musicBinder.setLocalActivityShow(false);
         //取消注册
         UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
-        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(onListViewClickItemListener);
     }
 
     /**

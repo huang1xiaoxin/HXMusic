@@ -37,6 +37,8 @@ public class UpdateDataInfo {
 
     public interface UpdateDataInfoListener {
         void updateInfo(int position);
+
+        void startMusicWhenClick(int position);
     }
 
     public class InnerUpdateInfoLister implements UpdateDataInfoListener {
@@ -61,6 +63,14 @@ public class UpdateDataInfo {
         public void updateInfo(int position) {
             for (UpdateDataInfoListener listener : mListeners) {
                 listener.updateInfo(position);
+
+            }
+        }
+
+        @Override
+        public void startMusicWhenClick(int position) {
+            for (UpdateDataInfoListener listener : mListeners) {
+                listener.startMusicWhenClick(position);
             }
         }
     }
