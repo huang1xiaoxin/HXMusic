@@ -39,53 +39,51 @@ public class Song {
         return bitmap;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
     public String getArtist() {
         return artist;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public long getId() {
         return id;
     }
 
-
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setDuration(long duration) {
-        this.duration = duration;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public long getDuration() {
         return duration;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 
     public String getSize() {
         return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 }

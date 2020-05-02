@@ -30,16 +30,16 @@ import java.util.List;
 public class LocalMusicActivity extends AppCompatActivity {
 
 
+    private final static String TAG = "LocalMusicActivity";
     public List<Song> songList;
+    public ImageButton startAndStopButton;
     private ListView listView;
     private ProgressBar progressBar;
     private TextView textView;
-    private final static String TAG="LocalMusicActivity";
     private MyService.MusicBinder musicBinder;
     private ViewPager viewPager;
     private MyMusicViewPager adapter;
     private int songIndex;
-    public ImageButton startAndStopButton;
     private boolean isOnStartUpdateViewPage =false;
     private int activityTag=1;
     private TextView tipText;
@@ -48,11 +48,16 @@ public class LocalMusicActivity extends AppCompatActivity {
     private ImageButton currentSongListButton;
     private UpdateDataInfo.UpdateDataInfoListener listener = new UpdateDataInfo.UpdateDataInfoListener() {
         @Override
-        public void updateInfo() {
-            isOnStartUpdateViewPage = true;
+        public void updateInfo(int position) {
             adapter.notifyDataSetChanged();
             Log.e(TAG, "updateViewPager: 更新底部播放栏的数据" );
 
+        }
+    };
+    private UpdateDataInfo.UpdateDataInfoListener onListViewClickItemListener = new UpdateDataInfo.UpdateDataInfoListener() {
+        @Override
+        public void updateInfo(int position) {
+            viewPager.setCurrentItem(position, false);
         }
     };
 
@@ -105,6 +110,62 @@ public class LocalMusicActivity extends AppCompatActivity {
 
     }
 
+    private void copyArrayList() {
+        for (int i = 0; i < listViewAdapter.getListSong().size(); i++) {
+            songList.add(listViewAdapter.getListSong().get(i));
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        isRestart = true;
+
+        listViewAdapter.clear();
+        LoadingAsyncTask asyncTask = new LoadingAsyncTask();
+        //开始执行
+        asyncTask.execute(activityTag);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (musicBinder.getPlayMusicList() != null && musicBinder.getPlayMusicList().size() > 0 && isRestart) {
+            adapter.setSongs(musicBinder.getPlayMusicList());
+            adapter.notifyDataSetChanged();
+            isRestart = false;
+        }
+        isOnStartUpdateViewPage = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isOnStartUpdateViewPage) {
+            //处理从其他页面跳转过来的时候设置底部的ui
+            viewPager.setCurrentItem(musicBinder.getCurrentIndex(), false);
+            if (musicBinder.isPlaying()) {
+                startAndStopButton.setImageResource(R.drawable.stop);
+            } else {
+                startAndStopButton.setImageResource(R.drawable.start);
+            }
+            isOnStartUpdateViewPage = false;
+        }
+        musicBinder.setLocalActivityShow(true);
+        //设置在弹窗中更改数据时 更新ViewPager
+        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);
+        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(onListViewClickItemListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        musicBinder.setLocalActivityShow(false);
+        //取消注册
+        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
+        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(onListViewClickItemListener);
+    }
+
     /**
      * 列表的点击事件
      */
@@ -131,35 +192,6 @@ public class LocalMusicActivity extends AppCompatActivity {
             }
         }
     }
-
-    private void copyArrayList() {
-        for (int i=0;i<listViewAdapter.getListSong().size();i++){
-            songList.add(listViewAdapter.getListSong().get(i));
-        }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        isRestart=true;
-
-        listViewAdapter.clear();
-        LoadingAsyncTask asyncTask=new LoadingAsyncTask();
-        //开始执行
-        asyncTask.execute(activityTag);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (musicBinder.getPlayMusicList()!=null&&musicBinder.getPlayMusicList().size()>0&& isRestart){
-            adapter.setSongs(musicBinder.getPlayMusicList());
-            adapter.notifyDataSetChanged();
-            isRestart=false;
-        }
-        isOnStartUpdateViewPage =true;
-    }
-
 
     class LoadingAsyncTask extends AsyncTask<Integer,Void,List<Song>>{
 
@@ -205,25 +237,6 @@ public class LocalMusicActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (isOnStartUpdateViewPage){
-            //处理从其他页面跳转过来的时候设置底部的ui
-            viewPager.setCurrentItem(musicBinder.getCurrentIndex(),false);
-            if (musicBinder.isPlaying()){
-                startAndStopButton.setImageResource(R.drawable.stop);
-            }else {
-                startAndStopButton.setImageResource(R.drawable.start);
-            }
-            isOnStartUpdateViewPage =false;
-        }
-        musicBinder.setLocalActivityShow(true);
-        //设置在弹窗中更改数据时 更新ViewPager
-        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);
-    }
-
     private class MyAddOnPageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -241,15 +254,6 @@ public class LocalMusicActivity extends AppCompatActivity {
         @Override
         public void onPageScrollStateChanged(int state) {
         }
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        musicBinder.setLocalActivityShow(false);
-        //取消注册
-        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
     }
 
     private class MyOnClickListener implements View.OnClickListener {

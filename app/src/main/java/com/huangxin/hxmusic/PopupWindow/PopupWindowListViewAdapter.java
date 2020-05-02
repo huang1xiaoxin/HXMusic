@@ -42,7 +42,7 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
 
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable final View convertView, @NonNull final ViewGroup parent) {
         View view;
         final ViewHolder viewHolder;
         final Song song=songList.get(position);
@@ -58,6 +58,16 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
             view=convertView;
             viewHolder=(ViewHolder) view.getTag();
         }
+        //因为API<19时会导致LitView的Item点击无法回调的问题因此在这里设置监听器
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UpdateDataInfo.getINSTANCE().updateDataInfoListener.updateInfo(position);
+                //设置背景
+                notifyDataSetChanged();
+                Log.e(TAG, "onClick: 播放歌曲" + songList.get(position).getTitle());
+            }
+        });
         viewHolder.artistTextView.setText("-"+song.getArtist());
         viewHolder.titleTextView.setText(song.getTitle());
         viewHolder.removeButton.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +95,7 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
 
                 }
                 //更新底部的ViewPager
-                UpdateDataInfo.getINSTANCE().updateDataInfoListener.updateInfo();
+                UpdateDataInfo.getINSTANCE().updateDataInfoListener.updateInfo(position);
                 updateSizeTextListener.updateSizeText();
                 Log.e(TAG, "onClick: 移当前播放列表中的歌曲:"+song.getTitle());
             }
@@ -118,4 +128,9 @@ public class PopupWindowListViewAdapter extends ArrayAdapter<Song> {
         void updateSizeText();
     }
 
+    @Nullable
+    @Override
+    public Song getItem(int position) {
+        return songList.get(position);
+    }
 }

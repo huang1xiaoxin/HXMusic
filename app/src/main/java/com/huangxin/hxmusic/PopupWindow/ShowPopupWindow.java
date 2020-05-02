@@ -28,15 +28,19 @@ public class ShowPopupWindow {
     private Context context;
     private ImageButton playModelImageButton;
     private int modelTag;
+    private ListView listView;
     private boolean isDetailMusicActivity = false;
     private PlayModelUpdateListener playModelUpdateListener;
     public void showPopupWindow(View view){
+        if (songList == null) {
+            return;
+        }
         //获取屏幕的宽和高
         DisplayMetrics dm =context.getResources().getDisplayMetrics();
         int width=dm.widthPixels;
         int height=dm.widthPixels;
         View contentView= LayoutInflater.from(context).inflate(R.layout.popup_window_layout,null);
-        ListView listView=contentView.findViewById(R.id.list_view_pw);
+        listView = contentView.findViewById(R.id.list_view_pw);
         playModelImageButton = contentView.findViewById(R.id.pw_model_play_ib);
         final TextView countText = contentView.findViewById(R.id.pd_count);
         countText.setText("("+songList.size()+")");

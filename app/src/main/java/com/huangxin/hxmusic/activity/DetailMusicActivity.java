@@ -51,7 +51,14 @@ public class DetailMusicActivity extends AppCompatActivity {
     private boolean addLike = true;
     UpdateDataInfo.UpdateDataInfoListener updateDataInfoListener = new UpdateDataInfo.UpdateDataInfoListener() {
         @Override
-        public void updateInfo() {
+        public void updateInfo(int position) {
+            initInfo();
+        }
+    };
+    private UpdateDataInfo.UpdateDataInfoListener onListViewClickItemListener = new UpdateDataInfo.UpdateDataInfoListener() {
+        @Override
+        public void updateInfo(int position) {
+            musicBinder.startPlayer(position);
             initInfo();
         }
     };
@@ -189,12 +196,14 @@ public class DetailMusicActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(updateDataInfoListener);
+        UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(onListViewClickItemListener);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(updateDataInfoListener);
+        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(onListViewClickItemListener);
     }
 
     class MyOnClickListener implements View.OnClickListener {

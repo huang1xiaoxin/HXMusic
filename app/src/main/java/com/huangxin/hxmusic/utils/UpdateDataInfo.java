@@ -36,7 +36,7 @@ public class UpdateDataInfo {
     //取消注册
 
     public interface UpdateDataInfoListener {
-        void updateInfo();
+        void updateInfo(int position);
     }
 
     public class InnerUpdateInfoLister implements UpdateDataInfoListener {
@@ -58,9 +58,9 @@ public class UpdateDataInfo {
         }
 
         @Override
-        public void updateInfo() {
+        public void updateInfo(int position) {
             for (UpdateDataInfoListener listener : mListeners) {
-                listener.updateInfo();
+                listener.updateInfo(position);
             }
         }
     }
