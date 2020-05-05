@@ -99,21 +99,7 @@ public class DataDo {
         Cursor cursor = sqLiteDatabase.query(tableName, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                Song song = new Song();
-                long id = Long.parseLong(cursor.getString(cursor.getColumnIndex("id")));
-                String title = cursor.getString(cursor.getColumnIndex("title"));
-                String artist = cursor.getString(cursor.getColumnIndex("artist"));
-                long duration = Long.parseLong(cursor.getString(cursor.getColumnIndex("duration")));
-                String size = cursor.getString(cursor.getColumnIndex("size"));
-                String uri = cursor.getString(cursor.getColumnIndex("uri"));
-                song.setDuration(duration);
-                song.setUrl(uri);
-                song.setSize(size);
-                song.setArtist(artist);
-                song.setTitle(title);
-                song.setId(id);
-                song.setUrl(uri);
-                list.add(song);
+                initSongList(list, cursor);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -140,5 +126,42 @@ public class DataDo {
             tableName = likeMusicTable;
         }
         sqLiteDatabase.delete(tableName, "id=? and uri=?", new String[]{String.valueOf(song.getId()), song.getUrl()});
+    }
+
+    //取数据库的前三条数据
+    public List<Song> queryThreeSong(int TAG) {
+        String sql = "";
+        List<Song> songList = new ArrayList<>(3);
+        if (TAG == ConstInterface.HISTORY_MUSIC_TABLE) {
+            sql = "select * from " + historyMusicTable + " limit 3";
+        } else if (TAG == ConstInterface.LIKE_MUSIC_TABLE) {
+            sql = "select *from " + likeMusicTable + " limit 3";
+        }
+        Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            do {
+                initSongList(songList, cursor);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return songList;
+    }
+
+    private void initSongList(List<Song> songList, Cursor cursor) {
+        Song song = new Song();
+        long id = Long.parseLong(cursor.getString(cursor.getColumnIndex("id")));
+        String title = cursor.getString(cursor.getColumnIndex("title"));
+        String artist = cursor.getString(cursor.getColumnIndex("artist"));
+        long duration = Long.parseLong(cursor.getString(cursor.getColumnIndex("duration")));
+        String size = cursor.getString(cursor.getColumnIndex("size"));
+        String uri = cursor.getString(cursor.getColumnIndex("uri"));
+        song.setDuration(duration);
+        song.setUrl(uri);
+        song.setSize(size);
+        song.setArtist(artist);
+        song.setTitle(title);
+        song.setId(id);
+        song.setUrl(uri);
+        songList.add(song);
     }
 }

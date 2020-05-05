@@ -76,6 +76,16 @@
                         android:layout_width="40dp"
                         android:layout_height="20dp"/>
 
+                    <GridView
+                        android:id="@+id/history_gw"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/history_text_title"
+                        android:columnWidth="90dp"
+                        android:gravity="center"
+                        android:horizontalSpacing="10dp"
+                        android:numColumns="auto_fit"
+                        android:scrollbars="none" />
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
@@ -106,6 +116,17 @@
                         android:layout_alignParentEnd="true"
                         android:background="@drawable/bt_shape"
                         android:text="更多" />
+
+                    <GridView
+                        android:id="@+id/like_gw"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/like_text_title"
+                        android:columnWidth="90dp"
+                        android:gravity="center"
+                        android:horizontalSpacing="10dp"
+                        android:numColumns="auto_fit"
+                        android:scrollbars="none" />
 
                 </RelativeLayout>
 
