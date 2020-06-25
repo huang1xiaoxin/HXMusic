@@ -1,48 +1,41 @@
 package com.huangxin.hxmusic.activity.adapter;
 
-import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.viewpager.widget.PagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.huangxin.hxmusic.base.BasePager;
+import com.huangxin.hxmusic.base.BasePagerFragment;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class MyPagerAdapter extends PagerAdapter {
-    private ArrayList<BasePager> pagerList;
+public class MyPagerAdapter extends FragmentPagerAdapter {
+    private List<BasePagerFragment> fragmentList;
 
-    public MyPagerAdapter(ArrayList<BasePager> pagerList) {
-        this.pagerList = pagerList;
-
-    }
-
-    @Override
-    public int getCount() {
-        return pagerList.size();
-    }
-
-    @Override
-    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return view == object;
+    public MyPagerAdapter(@NonNull FragmentManager fm, int behavior, List<BasePagerFragment> fragmentList) {
+        super(fm, behavior);
+        this.fragmentList = fragmentList;
     }
 
     @NonNull
     @Override
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        BasePager pager = pagerList.get(position);
-        //一定要初始化数据
-        pager.initDate();
-        Log.e("ViewPage", "已加载");
-        View view = pager.rootView;
-        container.addView(view);
-        return view;
+    public Fragment getItem(int position) {
+        return fragmentList != null ? fragmentList.get(position) : null;
+    }
+
+    @Override
+    public int getCount() {
+        return fragmentList != null ? fragmentList.size() : 0;
     }
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((View) object);
+        //判断是否要复用Fragment的View
+        if (!fragmentList.get(position).isReuseView()) {
+            super.destroyItem(container, position, object);
+        }
+
     }
 }

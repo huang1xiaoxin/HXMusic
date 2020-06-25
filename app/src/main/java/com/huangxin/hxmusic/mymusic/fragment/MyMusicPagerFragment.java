@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 
 import com.huangxin.hxmusic.Database.DataDo;
 import com.huangxin.hxmusic.R;
-import com.huangxin.hxmusic.base.BasePager;
+import com.huangxin.hxmusic.base.BasePagerFragment;
 import com.huangxin.hxmusic.mymusic.LocalMusicActivity;
 import com.huangxin.hxmusic.mymusic.adapter.ImageAdapter;
 import com.huangxin.hxmusic.service.MyService;
@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * 我的音乐的页面;
  */
-public class MyMusicPager extends BasePager {
+public class MyMusicPagerFragment extends BasePagerFragment {
 
     private static final String TAG = "MyViewPager";
     private Button loaclMusicButton;
@@ -49,14 +49,27 @@ public class MyMusicPager extends BasePager {
     private Button moreLikeSongButton;
     private Button moreHistorySongButton;
 
-    public MyMusicPager(Context mContext, MyService.MusicBinder musicBinder) {
-        super(mContext);
+    public MyMusicPagerFragment(MyService.MusicBinder musicBinder) {
         this.musicBinder = musicBinder;
     }
 
+
     @Override
-    public View initView() {
-        View view = View.inflate(context, R.layout.my_music_fragment, null);
+    protected void fragmentFirstLoadingData() {
+        //加载数据
+        List<Song> likeSongList = DataDo.getInstance(getContext()).queryThreeSong(ConstInterface.LIKE_MUSIC_TABLE);
+        List<Song> historySongList = DataDo.getInstance(getContext()).queryThreeSong(ConstInterface.HISTORY_MUSIC_TABLE);
+        if (likeSongList.size() > 0) {
+            likeGridView.setAdapter(new GridViewAdapter(getContext(), R.layout.griw_view_item, likeSongList));
+        }
+        if (historySongList.size() > 0) {
+            historyGridView.setAdapter(new GridViewAdapter(getContext(), R.layout.griw_view_item, historySongList));
+        }
+    }
+
+    @Override
+    public View initView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.my_music_fragment, container, false);
         Log.e(TAG, "初始化界面");
         initViewData(view);
         return view;
@@ -65,7 +78,7 @@ public class MyMusicPager extends BasePager {
     private void initViewData(View view) {
         banner = view.findViewById(R.id.ll_adevert_bar);
         //设置指示器
-        banner.setIndicator(new CircleIndicator(context));
+        banner.setIndicator(new CircleIndicator(getContext()));
         //设置指示器的位置
         banner.setIndicatorGravity(IndicatorConfig.Direction.RIGHT);
         //设置是否自动播放
@@ -76,7 +89,7 @@ public class MyMusicPager extends BasePager {
         //设置轮播时间
         banner.setDelayTime(2000);
         //设置适配器
-        banner.setAdapter(new ImageAdapter(initImageList(), context));
+        banner.setAdapter(new ImageAdapter(initImageList(), getContext()));
         //设置圆弧
         banner.setBannerRound(20);
         //开始轮播
@@ -95,20 +108,6 @@ public class MyMusicPager extends BasePager {
         moreLikeSongButton.setOnClickListener(new MyButtonOnClickListener());
     }
 
-    //初始化数据
-    @Override
-    public void initDate() {
-        super.initDate();
-        //加载数据
-        List<Song> likeSongList = DataDo.getInstance(context).queryThreeSong(ConstInterface.LIKE_MUSIC_TABLE);
-        List<Song> historySongList = DataDo.getInstance(context).queryThreeSong(ConstInterface.HISTORY_MUSIC_TABLE);
-        if (likeSongList.size() > 0) {
-            likeGridView.setAdapter(new GridViewAdapter(context, R.layout.griw_view_item, likeSongList));
-        }
-        if (historySongList.size() > 0) {
-            historyGridView.setAdapter(new GridViewAdapter(context, R.layout.griw_view_item, historySongList));
-        }
-    }
 
     public List<Integer> initImageList() {
         List<Integer> list = new ArrayList<>();
@@ -127,7 +126,7 @@ public class MyMusicPager extends BasePager {
     private class MyButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(context, LocalMusicActivity.class);
+            Intent intent = new Intent(getContext(), LocalMusicActivity.class);
             Bundle bundle = new Bundle();
             bundle.putBinder("MusicBinder", musicBinder);
             intent.putExtra("MusicBundle", bundle);
@@ -146,10 +145,9 @@ public class MyMusicPager extends BasePager {
                 default:
                     break;
             }
-            context.startActivity(intent);
+            getContext().startActivity(intent);
         }
     }
-
 
 }
 

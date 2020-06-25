@@ -6,21 +6,26 @@
     android:layout_height="60dp"
     android:padding="8dp">
 
-    <ImageView
+    <com.huangxin.hxmusic.ui.CircleImageView
         android:id="@+id/lv_image_view"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="fitXY"
+        app:createBorder="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:mBorderColor="@color/border_color"
+        app:mBorderWidth="2dp"
+        app:mRoundRadius="10dp"
+        app:mShapeType="rounded_rect"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:layout_marginLeft="10dp"
         android:id="@+id/title_tv"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:text="TextView"
         android:textColor="@color/text_title_color"
         android:textSize="14sp"
@@ -29,10 +34,10 @@
         tools:text="4444444" />
 
     <TextView
-        android:layout_marginLeft="10dp"
         android:id="@+id/artist_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="4dp"
         android:text="张杰"
         android:textColor="@color/text_artist_color"

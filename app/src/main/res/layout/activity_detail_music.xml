@@ -42,27 +42,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/artist_tv" />
 
-    <ImageView
+    <com.huangxin.hxmusic.ui.CircleImageView
         android:id="@+id/iv_image"
         android:layout_width="250dp"
         android:layout_height="250dp"
+        app:createBorder="true"
         app:layout_constraintBottom_toTopOf="@+id/like_bt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_tv"
+        app:mBorderColor="@color/border_color"
+        app:mBorderWidth="4dp"
+        app:mShapeType="circle"
         app:srcCompat="@drawable/default_image" />
 
     <ImageButton
-        android:background="@drawable/circular_shape"
         android:id="@+id/like_bt"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
+        android:background="@drawable/circular_shape"
+        android:scaleType="fitCenter"
+        android:src="@drawable/dislike"
         app:layout_constraintBottom_toTopOf="@+id/seekBar3"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/dislike"
-        android:scaleType="fitCenter"
         tools:ignore="MissingConstraints" />
 
     <SeekBar
@@ -103,20 +107,20 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
-            android:scaleType="fitCenter"
             android:id="@+id/play_model_ib"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/circular_shape"
+            android:scaleType="fitCenter"
             android:src="@drawable/list_play" />
 
         <ImageButton
-            android:scaleType="fitCenter"
             android:id="@+id/last_song_ib"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginLeft="20dp"
             android:background="@drawable/circular_shape"
+            android:scaleType="fitCenter"
             android:src="@drawable/last" />
 
         <ImageButton
@@ -124,26 +128,26 @@
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_marginLeft="20dp"
-            android:scaleType="fitCenter"
             android:background="@drawable/circular_shape"
+            android:scaleType="fitCenter"
             android:src="@drawable/start_music" />
 
         <ImageButton
-            android:scaleType="fitCenter"
             android:id="@+id/next_song_ib"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginLeft="20dp"
             android:background="@drawable/circular_shape"
+            android:scaleType="fitCenter"
             android:src="@drawable/next" />
 
         <ImageButton
-            android:scaleType="fitCenter"
             android:id="@+id/song_list_ib"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="20dp"
             android:background="@drawable/circular_shape"
+            android:scaleType="fitCenter"
             android:src="@drawable/list" />
 
     </LinearLayout>

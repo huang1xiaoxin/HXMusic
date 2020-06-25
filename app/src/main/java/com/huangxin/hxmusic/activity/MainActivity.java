@@ -7,21 +7,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.huangxin.hxmusic.PopupWindow.ShowPopupWindow;
 import com.huangxin.hxmusic.R;
 import com.huangxin.hxmusic.activity.adapter.MyMusicViewPager;
 import com.huangxin.hxmusic.activity.adapter.MyPagerAdapter;
-import com.huangxin.hxmusic.base.BasePager;
-import com.huangxin.hxmusic.findpager.pager.FindPager;
-import com.huangxin.hxmusic.mvpager.pager.MVPager;
-import com.huangxin.hxmusic.mymusic.fragment.MyMusicPager;
+import com.huangxin.hxmusic.base.BasePagerFragment;
+import com.huangxin.hxmusic.findpager.pager.FindPagerFragment;
+import com.huangxin.hxmusic.mvpager.pager.MVPagerFragment;
+import com.huangxin.hxmusic.mymusic.fragment.MyMusicPagerFragment;
 import com.huangxin.hxmusic.service.MyService;
 import com.huangxin.hxmusic.utils.Song;
 import com.huangxin.hxmusic.utils.UpdateDataInfo;
@@ -31,12 +33,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
-    private ArrayList<BasePager> pagerArrayList;
+    private ArrayList<BasePagerFragment> pagerArrayList;
     private int index;
     private MyService.MusicBinder musicBinder;
     private ViewPager viewPager;
     private RadioGroup radioGroup;
-    private MyMusicPager myMusicPager;
+    private MyMusicPagerFragment myMusicPager;
     private ImageButton startAndStopButton;
     private ViewPager changeSongViewPager;
     private LinearLayout sampleStartLinearLayout;
@@ -70,10 +72,13 @@ public class MainActivity extends AppCompatActivity {
         initPermission();
         viewPager = findViewById(R.id.am_viewpager);
         radioGroup = findViewById(R.id.radio_group);
-        viewPager.setAdapter(new MyPagerAdapter(pagerArrayList));
+        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, pagerArrayList));
         viewPager.addOnPageChangeListener(new MyOnPageChangeListener());
         radioGroup.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        radioGroup.check(R.id.rb_my_music);
+        //设置默认的页面
+        viewPager.setCurrentItem(0, false);
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(0);
+        radioButton.setChecked(true);
         startAndStopButton = findViewById(R.id.ib_start_stop);
         changeSongViewPager = findViewById(R.id.vp_change_song);
         currentSongList = findViewById(R.id.current_list_pw);
@@ -96,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
      */
     public void initViewPager() {
         pagerArrayList = new ArrayList<>();
-        myMusicPager = new MyMusicPager(this, musicBinder);
+        myMusicPager = new MyMusicPagerFragment(musicBinder);
         pagerArrayList.add(myMusicPager);
-        pagerArrayList.add(new FindPager(this));
-        pagerArrayList.add(new MVPager(this));
+        pagerArrayList.add(new FindPagerFragment());
+        pagerArrayList.add(new MVPagerFragment());
     }
 
     //动态申请存储读取的权限
@@ -185,7 +190,16 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onPageSelected(int position) {
-            index = position;
+            if (radioGroup.getChildAt(position) instanceof RadioButton) {
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(position);
+                radioButton.setChecked(true);
+            } else {
+                Log.e(TAG, "onPageSelected: 切换页面失败");
+            }
+            //使用check()会回调三次改变的监听
+            //https://blog.csdn.net/qq_32452623/article/details/80474487?utm_medium=distribute.wap_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.wap_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+            // radioGroup.check(id);
+
         }
 
         /**
@@ -196,24 +210,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onPageScrollStateChanged(int state) {
-            //滑动结束的时候改变radioButton的状态
-            if (state == 0) {
-                int id = R.id.rb_my_music;
-                switch (index) {
-                    case 0:
-                        id = R.id.rb_my_music;
-                        break;
-                    case 1:
-                        id = R.id.rb_find_music;
-                        break;
-                    case 2:
-                        id = R.id.rb_mv;
-                        break;
-                    default:
-                        break;
-                }
-                radioGroup.check(id);
-            }
 
         }
     }
@@ -222,9 +218,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             switch (checkedId) {
-                default:
+                case R.id.rb_my_music:
                     index = 0;
-                    myMusicPager.getBanner().start();
+                    if (myMusicPager != null && myMusicPager.getBanner() != null) {
+                        myMusicPager.getBanner().start();
+                    }
                     break;
                 case R.id.rb_find_music:
                     //当现实其他页面的时候停止切换
@@ -237,7 +235,9 @@ public class MainActivity extends AppCompatActivity {
                     index = 2;
                     break;
             }
-            viewPager.setCurrentItem(index, false);
+            if (viewPager.getCurrentItem() != index) {
+                viewPager.setCurrentItem(index, false);
+            }
 
         }
     }

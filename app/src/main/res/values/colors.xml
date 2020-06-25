@@ -9,4 +9,9 @@
     <color name="background_bottom">#F8F5F5</color>
     <color name="text_artist_color">#131212</color>
     <color name="text_size_color">#77090606</color>
+    <color name="button_text_color">#77000000</color>
+    <color name="row1_artist_text">#8a8a8a</color>
+    <color name="descide_text_color">#778a8a8a</color>
+    <color name="desc_text_color">#77272424</color>
+    <color name="border_color">#4F7EBEE8</color>
 </resources>
