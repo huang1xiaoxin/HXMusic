@@ -76,7 +76,6 @@ public class CircleImageView extends ImageView {
         this(context, attrs, defStyleAttr, 0);
     }
 
-
     public CircleImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
@@ -109,12 +108,15 @@ public class CircleImageView extends ImageView {
         }
     }
 
+<<<<<<< HEAD
     /**
      * 在onDraw中不要有过多复杂的逻辑，和过于复杂多余的计算，否则会导致绘制不全的现象
      * ：·
      *
      * @param canvas
      */
+=======
+>>>>>>> origin/master
     @Override
     protected void onDraw(Canvas canvas) {
         Bitmap bitmap = getBitmap(getDrawable());
