@@ -1,15 +1,10 @@
 package com.huangxin.hxmusic.findpager.ui;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
+/**
+ * 已丢失 因为glide自带含有
+ */
 
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-
+/*
 public class CirCleCrop extends BitmapTransformation {
 
 
@@ -23,10 +18,12 @@ public class CirCleCrop extends BitmapTransformation {
 
     @Override
     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+        int width=toTransform.getWidth();
+        int height=toTransform.getHeight();
         //计算直径
-        int diameter = Math.min(toTransform.getWidth(), toTransform.getHeight());
+        int diameter = Math.min(width, height);
         //从缓冲池中获取可重用的Bitmap对象
-        final Bitmap toReuse = pool.get(outWidth, outHeight, Bitmap.Config.ARGB_8888);
+        final Bitmap toReuse = pool.get(diameter, diameter, Bitmap.Config.ARGB_8888);
         final Bitmap result;
         if (toReuse != null) {
             result = toReuse;
@@ -34,8 +31,8 @@ public class CirCleCrop extends BitmapTransformation {
             //根据直径来创建Bitmap
             result = Bitmap.createBitmap(diameter, diameter, Bitmap.Config.ARGB_8888);
         }
-        int sx = diameter / toTransform.getWidth();
-        int sy = diameter / toTransform.getHeight();
+        int sx =  (width- diameter) / 2;
+        int sy = (height- diameter) / 2;
         Canvas canvas = new Canvas(result);
         Paint paint = new Paint();
         /**
@@ -44,18 +41,19 @@ public class CirCleCrop extends BitmapTransformation {
          *  REPEAT ：Bitmap以其内容以重复的方式填充剩余空白
          *
          */
+/*
         BitmapShader shader = new BitmapShader(toTransform, BitmapShader.TileMode.MIRROR, BitmapShader.TileMode.MIRROR);
         if (sx != 0 || sy != 0) {
             //设置缩放比例
             Matrix matrix = new Matrix();
-            matrix.setTranslate(sx, sy);
+            matrix.setTranslate(-sx, -sy);
             shader.setLocalMatrix(matrix);
         }
         paint.setShader(shader);
         //设置抗锯齿
         paint.setAntiAlias(true);
         //计算出半径
-        float radius = diameter / 2f;
+        float radius = diameter / 2.0f;
         //画圆
         canvas.drawCircle(radius, radius, radius, paint);
         if (toReuse != null && !pool.put(toReuse)) {
@@ -69,4 +67,6 @@ public class CirCleCrop extends BitmapTransformation {
     public String getId() {
         return "com.huangxin.hxmusic.findpager.ui.CircleCrop";
     }
+
 }
+**/

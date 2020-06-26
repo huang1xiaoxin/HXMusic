@@ -10,10 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.drakeet.multitype.ItemViewBinder;
 import com.huangxin.hxmusic.R;
-import com.huangxin.hxmusic.findpager.ui.CirCleCrop;
+import com.huangxin.hxmusic.utils.GlideUtill;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,15 +38,9 @@ public class PlayListItemView extends ItemViewBinder<PlayListData, PlayListItemV
             viewHolder.textView1.setText(playListData.listBeanList.get(0).getPlaylist().getName());
             viewHolder.textView2.setText(playListData.listBeanList.get(1).getPlaylist().getName());
             viewHolder.textView3.setText(playListData.listBeanList.get(2).getPlaylist().getName());
-            Glide.with(mContext).load(playListData.listBeanList.get(0).getPlaylist().getCoverImgUrl()).transform(new CirCleCrop(mContext)).into(
-                    viewHolder.imageView1
-            );
-            Glide.with(mContext).load(playListData.listBeanList.get(1).getPlaylist().getCoverImgUrl()).transform(new CirCleCrop(mContext)).into(
-                    viewHolder.imageView2
-            );
-            Glide.with(mContext).load(playListData.listBeanList.get(2).getPlaylist().getCoverImgUrl()).transform(new CirCleCrop(mContext)).into(
-                    viewHolder.imageView3
-            );
+            GlideUtill.LoadingRoundRect(mContext, playListData.listBeanList.get(0).getPlaylist().getCoverImgUrl(), viewHolder.imageView1, 10);
+            GlideUtill.LoadingRoundRect(mContext, playListData.listBeanList.get(1).getPlaylist().getCoverImgUrl(), viewHolder.imageView2, 10);
+            GlideUtill.LoadingRoundRect(mContext, playListData.listBeanList.get(2).getPlaylist().getCoverImgUrl(), viewHolder.imageView3, 10);
         }
 
     }

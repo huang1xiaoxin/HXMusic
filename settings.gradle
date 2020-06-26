@@ -1,3 +1,3 @@
-include ':app', ':bannerLibrary'
+include ':app', ':bannerLibrary', ':transformations'
 rootProject.name='HXMusic'
 

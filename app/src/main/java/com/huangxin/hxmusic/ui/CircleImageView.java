@@ -160,7 +160,7 @@ public class CircleImageView extends ImageView {
 
     private void createRoundRect(Canvas canvas, float width, float height, float doubleBorderWidth, float halfBorderWidth) {
         mRectBorder.set(halfBorderWidth, halfBorderWidth, width - halfBorderWidth, height - halfBorderWidth);
-        mRectBitmap.set(0.0f, 0.0f, (float) width - doubleBorderWidth, (float) height - doubleBorderWidth);
+        mRectBitmap.set(0.0f, 0.0f, width - doubleBorderWidth, height - doubleBorderWidth);
         float bitmapRadius = Math.max((mRoundRadius - mBorderWidth), 0.0f);
         if (createBorder) {
             float rectRadius = Math.max(mRoundRadius - halfBorderWidth, 0.0f);
