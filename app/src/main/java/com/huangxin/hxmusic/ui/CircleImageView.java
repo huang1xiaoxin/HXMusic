@@ -274,5 +274,100 @@ public class CircleImageView extends ImageView {
         this.mTileY = mTileY;
     }
 
+    public Paint getmPaint() {
+        return mPaint;
+    }
 
+    public void setmPaint(Paint mPaint) {
+        this.mPaint = mPaint;
+    }
+
+    public Bitmap getmRawBitmap() {
+        return mRawBitmap;
+    }
+
+    public void setmRawBitmap(Bitmap mRawBitmap) {
+        this.mRawBitmap = mRawBitmap;
+    }
+
+    public BitmapShader getmShader() {
+        return mShader;
+    }
+
+    public void setmShader(BitmapShader mShader) {
+        this.mShader = mShader;
+    }
+
+    @Override
+    public Matrix getMatrix() {
+        return matrix;
+    }
+
+    public void setMatrix(Matrix matrix) {
+        this.matrix = matrix;
+    }
+
+    public Paint getmBorderPaint() {
+        return mBorderPaint;
+    }
+
+    public void setmBorderPaint(Paint mBorderPaint) {
+        this.mBorderPaint = mBorderPaint;
+    }
+
+    public RectF getmRectBorder() {
+        return mRectBorder;
+    }
+
+    public void setmRectBorder(RectF mRectBorder) {
+        this.mRectBorder = mRectBorder;
+    }
+
+    public RectF getmRectBitmap() {
+        return mRectBitmap;
+    }
+
+    public void setmRectBitmap(RectF mRectBitmap) {
+        this.mRectBitmap = mRectBitmap;
+    }
+
+    public int getmBorderWidth() {
+        return mBorderWidth;
+    }
+
+    public void setmBorderWidth(int mBorderWidth) {
+        this.mBorderWidth = mBorderWidth;
+    }
+
+    public int getmBorderColor() {
+        return mBorderColor;
+    }
+
+    public void setmBorderColor(int mBorderColor) {
+        this.mBorderColor = mBorderColor;
+    }
+
+    public boolean isCreateBorder() {
+        return createBorder;
+    }
+
+    public void setCreateBorder(boolean createBorder) {
+        this.createBorder = createBorder;
+    }
+
+    public int getmRoundRadius() {
+        return mRoundRadius;
+    }
+
+    public void setmRoundRadius(int mRoundRadius) {
+        this.mRoundRadius = mRoundRadius;
+    }
+
+    public int getmShapeType() {
+        return mShapeType;
+    }
+
+    public void setmShapeType(int mShapeType) {
+        this.mShapeType = mShapeType;
+    }
 }
