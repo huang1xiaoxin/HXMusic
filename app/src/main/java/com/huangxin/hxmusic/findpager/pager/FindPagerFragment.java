@@ -17,6 +17,14 @@ import com.huangxin.hxmusic.base.BasePagerFragment;
 import com.huangxin.hxmusic.base.Items;
 import com.huangxin.hxmusic.findpager.pager.MultiType.PlayListData;
 import com.huangxin.hxmusic.findpager.pager.MultiType.PlayListItemView;
+import com.huangxin.hxmusic.findpager.pager.MultiType.SingPlayListItemView;
+import com.huangxin.hxmusic.findpager.pager.MultiType.SingSongItemData;
+import com.huangxin.hxmusic.findpager.pager.MultiType.SingSongItemView;
+import com.huangxin.hxmusic.findpager.pager.MultiType.SinglePlayListData;
+import com.huangxin.hxmusic.findpager.pager.MultiType.TitleItemData;
+import com.huangxin.hxmusic.findpager.pager.MultiType.TitleItemView;
+
+import io.reactivex.Observable;
 
 /**
  * 我的音乐的页面;
@@ -28,16 +36,19 @@ public class FindPagerFragment extends BasePagerFragment {
     private MultiTypeAdapter multiTypeAdapter;
     private Items items;
     private FinPagerPresenter pagerPresenter;
+    public Observable getDataObservable;
 
 
     public FindPagerFragment() {
         pagerPresenter = new FinPagerPresenter(this);
+
     }
 
     @Override
     protected void fragmentFirstLoadingData() {
         //加载数据
-        pagerPresenter.getPlayList();
+        pagerPresenter.getPageAllItems();
+
     }
 
     @Override
@@ -63,5 +74,9 @@ public class FindPagerFragment extends BasePagerFragment {
     public void registerDataItems() {
         super.registerDataItems();
         multiTypeAdapter.register(PlayListData.class, new PlayListItemView(context));
+        multiTypeAdapter.register(SinglePlayListData.class, new SingPlayListItemView(context));
+        multiTypeAdapter.register(TitleItemData.class, new TitleItemView(context));
+        multiTypeAdapter.register(SingSongItemData.class, new SingSongItemView(context));
     }
+
 }

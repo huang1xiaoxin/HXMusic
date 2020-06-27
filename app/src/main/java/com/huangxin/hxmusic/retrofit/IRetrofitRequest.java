@@ -9,4 +9,7 @@ import retrofit2.http.Query;
 public interface IRetrofitRequest {
     @GET("?type=playlist")
     Observable<PlayListBean> getPlayListRetrofit(@Query("id") String id);
+
+    @GET("?type=playlist")
+    Observable<PlayListBean> getSingleListRetrofit(@Query("id") String id);
 }

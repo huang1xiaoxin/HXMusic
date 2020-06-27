@@ -61,7 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <TextView
-                        android:id="@+id/history_text_title"
+                        android:id="@+id/text_title"
                         android:textColor="@color/text_title_color"
                         android:text="最近播放"
                         android:textSize="18sp"
@@ -70,7 +70,7 @@
 
                     <Button
                         android:layout_alignParentEnd="true"
-                        android:id="@+id/bt_more_history"
+                        android:id="@+id/bt_more"
                         android:text="更多"
                         android:background="@drawable/bt_shape"
                         android:layout_width="40dp"
@@ -80,7 +80,7 @@
                         android:id="@+id/history_gw"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_below="@+id/history_text_title"
+                        android:layout_below="@+id/text_title"
                         android:columnWidth="90dp"
                         android:gravity="center"
                         android:horizontalSpacing="10dp"

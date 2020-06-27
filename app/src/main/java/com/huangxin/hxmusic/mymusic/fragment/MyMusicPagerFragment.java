@@ -99,7 +99,7 @@ public class MyMusicPagerFragment extends BasePagerFragment {
         historyMusicButton = view.findViewById(R.id.bt_history_music);
         historyGridView = view.findViewById(R.id.history_gw);
         moreLikeSongButton = view.findViewById(R.id.bt_more_like);
-        moreHistorySongButton = view.findViewById(R.id.bt_more_history);
+        moreHistorySongButton = view.findViewById(R.id.bt_more);
         likeGridView = view.findViewById(R.id.like_gw);
         loaclMusicButton.setOnClickListener(new MyButtonOnClickListener());
         historyMusicButton.setOnClickListener(new MyButtonOnClickListener());
@@ -139,7 +139,7 @@ public class MyMusicPagerFragment extends BasePagerFragment {
                     intent.putExtra("tag", 2);
                     break;
                 case R.id.bt_history_music:
-                case R.id.bt_more_history:
+                case R.id.bt_more:
                     intent.putExtra("tag", 3);
                     break;
                 default:

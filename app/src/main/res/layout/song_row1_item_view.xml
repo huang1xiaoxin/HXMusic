@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="72dp">
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
 
     <ImageView
         android:id="@+id/image_view"
@@ -19,14 +20,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="30dp"
         app:layout_constraintBottom_toBottomOf="@id/image_view"
         app:layout_constraintLeft_toRightOf="@id/image_view"
         app:layout_constraintTop_toTopOf="@id/image_view"
         tools:ignore="MissingConstraints">
 
         <TextView
-            android:id="@+id/sing_text_view"
+            android:id="@+id/song_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -48,9 +49,9 @@
             android:singleLine="true"
             android:textColor="@color/row1_artist_text"
             android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="@id/sing_text_view"
-            app:layout_constraintLeft_toRightOf="@id/sing_text_view"
-            app:layout_constraintTop_toTopOf="@id/sing_text_view"
+            app:layout_constraintBottom_toBottomOf="@id/song_text_view"
+            app:layout_constraintLeft_toRightOf="@id/song_text_view"
+            app:layout_constraintTop_toTopOf="@id/song_text_view"
             tools:ignore="MissingConstraints"
             tools:text="林俊杰" />
 
@@ -63,18 +64,19 @@
             android:maxLines="2"
             android:textColor="@color/descide_text_color"
             android:textSize="9sp"
-            app:layout_constraintTop_toBottomOf="@id/sing_text_view"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/song_text_view"
             tools:ignore="MissingConstraints"
             tools:text="huanghuang心心心心心心心ixn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.huangxin.hxmusic.ui.CircleButton
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+    <!--    <com.huangxin.hxmusic.ui.CircleButton-->
+    <!--        android:layout_width="40dp"-->
+    <!--        android:layout_height="40dp"-->
+    <!--        android:layout_marginEnd="10dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintRight_toRightOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        tools:ignore="MissingConstraints" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
