@@ -10,15 +10,16 @@ import com.huangxin.hxmusic.R;
 
 public class GlideUtill {
     private final static int load = R.drawable.load;
+    private final static int error = R.drawable.loding_error;
 
     public static void LoadingRoundRect(Context context, String url, ImageView view, int mRoundRadius) {
-        Glide.with(context).load(url).placeholder(load).transform(new RoundedCorners(20)).into(
+        Glide.with(context).load(url).placeholder(load).error(error).transform(new RoundedCorners(20)).into(
                 view
         );
     }
 
     public static void LoadingCircle(Context context, String url, ImageView view) {
-        Glide.with(context).load(url).placeholder(load).transform(new CircleCrop()).into(
+        Glide.with(context).load(url).placeholder(load).error(error).transform(new CircleCrop()).into(
                 view
         );
     }

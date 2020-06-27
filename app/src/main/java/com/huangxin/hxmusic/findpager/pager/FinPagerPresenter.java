@@ -53,6 +53,7 @@ public class FinPagerPresenter {
         List<PlayListBean> tempList = new ArrayList<>();
         getPlayList();
         FindPageModel.getSingListContext().subscribe(playListBean -> {
+            Log.e(TAG, "getPageAllItems: 加载数据成功" + playListBean.getPlaylist().getName());
             tempList.add(playListBean);
         }, new Consumer<Throwable>() {
             @Override
@@ -70,14 +71,14 @@ public class FinPagerPresenter {
     public Items transformItems(List<PlayListBean> list) {
         for (int i = 0; i < list.size(); i++) {
             items.add(new TitleItemData(list.get(i).getPlaylist().getName()));
-            if (i == 0) {
+            if (i % 2 == 0) {
                 items.add(new SinglePlayListData(list.get(i)));
-            } else if (i == 1) {
+            } else {
                 PlayListBean tempPlayListBean = list.get(i);
                 List<PlayListBean.PlaylistBean.TracksBean> tracksBeans = tempPlayListBean.getPlaylist().getTracks();
                 int index = 0;
-                if (tracksBeans.size() > 10) {
-                    index = 10;
+                if (tracksBeans.size() > 5) {
+                    index = 5;
                 } else {
                     index = tracksBeans.size();
                 }

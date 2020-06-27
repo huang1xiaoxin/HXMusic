@@ -18,6 +18,7 @@ import io.reactivex.schedulers.Schedulers;
 public class FindPageModel {
     private static List<String> mTopItemPlayListId;
     private static List<String> mNormalItemPlayListId;
+    private static final String TAG = "FindPageModel";
 
     //获取歌曲的数据
     public static Observable<PlayListBean> getPlayListContext() {
@@ -45,7 +46,14 @@ public class FindPageModel {
     private static void initNormalPlayListId() {
         mNormalItemPlayListId = new ArrayList<>();
         mNormalItemPlayListId.add("2779796218");
-        mNormalItemPlayListId.add("5078834278");
+        mNormalItemPlayListId.add("2255414104");
+        // mNormalItemPlayListId.add("5078834278");
+        mNormalItemPlayListId.add("5041838938");
+        mNormalItemPlayListId.add("4906766923");
+        // mNormalItemPlayListId.add("2960248142");
+        mNormalItemPlayListId.add("4879799554");
+        mNormalItemPlayListId.add("2951338871");
+
     }
 
     public static Observable<PlayListBean> getSingListContext() {
@@ -53,7 +61,7 @@ public class FindPageModel {
         return Observable.fromIterable(mNormalItemPlayListId).concatMap(new Function<String, ObservableSource<PlayListBean>>() {
             @Override
             public ObservableSource<PlayListBean> apply(String s) throws Exception {
-                Log.e("@@@", "apply: " + s);
+                Log.e(TAG, "apply: " + s);
                 return RetrofitRequest.getBaseRetrofit().create(IRetrofitRequest.class)
                         .getSingleListRetrofit(s);
             }
