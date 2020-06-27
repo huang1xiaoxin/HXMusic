@@ -38,19 +38,19 @@ public class FindPageModel {
 
     private static void initPlayListId() {
         mTopItemPlayListId = new ArrayList<>();
-        mTopItemPlayListId.add("3172849329");
         mTopItemPlayListId.add("4908214162");
-        mTopItemPlayListId.add("4867807976");
+        mTopItemPlayListId.add("3172849329");
+        mTopItemPlayListId.add("4876758556");
     }
 
     private static void initNormalPlayListId() {
         mNormalItemPlayListId = new ArrayList<>();
-        mNormalItemPlayListId.add("2779796218");
-        mNormalItemPlayListId.add("2255414104");
-        // mNormalItemPlayListId.add("5078834278");
+        mNormalItemPlayListId.add("4983945186");
+        mNormalItemPlayListId.add("4970544899");
+        mNormalItemPlayListId.add("5078834278");
         mNormalItemPlayListId.add("5041838938");
-        mNormalItemPlayListId.add("4906766923");
-        // mNormalItemPlayListId.add("2960248142");
+//        mNormalItemPlayListId.add("4906766923");
+//        mNormalItemPlayListId.add("2960248142");
         mNormalItemPlayListId.add("4879799554");
         mNormalItemPlayListId.add("2951338871");
 

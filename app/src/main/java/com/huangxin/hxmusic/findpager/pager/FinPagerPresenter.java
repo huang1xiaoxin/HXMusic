@@ -40,9 +40,9 @@ public class FinPagerPresenter {
             Log.e(TAG, "加载完成" + mPlayList.size());
             if (items.size() != 0) {
                 items.add(0, new PlayListData(mPlayList));
-                items.add(0, new TitleItemData("举荐歌单"));
+                items.add(0, new TitleItemData("举荐"));
             } else {
-                items.add(new TitleItemData("举荐歌单"));
+                items.add(new TitleItemData("举荐"));
                 items.add(new PlayListData(mPlayList));
             }
 
@@ -71,14 +71,18 @@ public class FinPagerPresenter {
     public Items transformItems(List<PlayListBean> list) {
         for (int i = 0; i < list.size(); i++) {
             items.add(new TitleItemData(list.get(i).getPlaylist().getName()));
-            if (i % 2 == 0) {
+            if (i % 2 == 0 || i == 1) {
                 items.add(new SinglePlayListData(list.get(i)));
             } else {
                 PlayListBean tempPlayListBean = list.get(i);
                 List<PlayListBean.PlaylistBean.TracksBean> tracksBeans = tempPlayListBean.getPlaylist().getTracks();
                 int index = 0;
                 if (tracksBeans.size() > 5) {
-                    index = 5;
+                    if (i == list.size() - 1) {
+                        index = tracksBeans.size();
+                    } else {
+                        index = 5;
+                    }
                 } else {
                     index = tracksBeans.size();
                 }
