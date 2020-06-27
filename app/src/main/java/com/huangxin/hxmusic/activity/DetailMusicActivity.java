@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -49,6 +52,7 @@ public class DetailMusicActivity extends AppCompatActivity {
     private int modelTag = 1;
     private Timer timer;
     private boolean addLike = true;
+    private Animation mAnimation;
     UpdateDataInfo.UpdateDataInfoListener updateDataInfoListener = new UpdateDataInfo.UpdateDataInfoListener() {
         @Override
         public void updateInfo(int position) {
@@ -99,6 +103,10 @@ public class DetailMusicActivity extends AppCompatActivity {
         });
         currentIndex = musicBinder.getCurrentIndex();
         songList = musicBinder.getPlayMusicList();
+        //开启动画
+        mAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_anim);
+        LinearInterpolator interpolator = new LinearInterpolator();
+        mAnimation.setInterpolator(interpolator);
         initView();
         //开启计时器
         timer.schedule(timerTask, 0, 500);
@@ -135,6 +143,9 @@ public class DetailMusicActivity extends AppCompatActivity {
 
     private void initInfo() {
         if (musicBinder.getPlayMusicList().size() > 0) {
+            if (imageView.getAnimation() != null) {
+                imageView.clearAnimation();
+            }
             currentIndex = musicBinder.getCurrentIndex();
             Bitmap bitmap = songList.get(currentIndex).loadingBitmap(songList.get(currentIndex).getUrl(), 250, 250);
             if (bitmap != null) {
@@ -159,6 +170,13 @@ public class DetailMusicActivity extends AppCompatActivity {
             } else {
                 addLikeButton.setImageResource(R.drawable.dislike);
                 addLike = false;
+            }
+            if (imageView.getAnimation() == null) {
+                imageView.setAnimation(mAnimation);
+            }
+            //设置动画
+            if (musicBinder.isPlaying()) {
+                imageView.startAnimation(mAnimation);
             }
         }
     }
@@ -198,9 +216,17 @@ public class DetailMusicActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        //停止动画
+        imageView.clearAnimation();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(updateDataInfoListener);
+        mAnimation = null;
     }
 
     class MyOnClickListener implements View.OnClickListener {
