@@ -24,8 +24,6 @@ import com.huangxin.hxmusic.findpager.pager.MultiType.SinglePlayListData;
 import com.huangxin.hxmusic.findpager.pager.MultiType.TitleItemData;
 import com.huangxin.hxmusic.findpager.pager.MultiType.TitleItemView;
 
-import io.reactivex.Observable;
-
 /**
  * 我的音乐的页面;
  */
@@ -36,7 +34,7 @@ public class FindPagerFragment extends BasePagerFragment {
     private MultiTypeAdapter multiTypeAdapter;
     private Items items;
     private FinPagerPresenter pagerPresenter;
-    public Observable getDataObservable;
+    private boolean showLoading = true;
 
 
     public FindPagerFragment() {
@@ -46,10 +44,16 @@ public class FindPagerFragment extends BasePagerFragment {
 
     @Override
     protected void fragmentFirstLoadingData() {
-        showLoading();
         //加载数据
         pagerPresenter.getPageAllItems();
 
+    }
+
+    @Override
+    protected void fragmentEveryLoadingData() {
+        if (!getmLoadingDataSuccess()) {
+            fragmentFirstLoadingData();
+        }
     }
 
     @Override
@@ -69,6 +73,9 @@ public class FindPagerFragment extends BasePagerFragment {
         this.items = items;
         multiTypeAdapter.setItems(items);
         multiTypeAdapter.notifyDataSetChanged();
+        setmLoadingDataSuccess(true);
+        showLoading = false;
+
     }
 
     @Override
@@ -80,4 +87,13 @@ public class FindPagerFragment extends BasePagerFragment {
         multiTypeAdapter.register(SingSongItemData.class, new SingSongItemView(context));
     }
 
+    @Override
+    public void onResume() {
+        if (showLoading) {
+            showLoading();
+        } else {
+            hideLoading();
+        }
+        super.onResume();
+    }
 }

@@ -21,6 +21,7 @@ public class FinPagerPresenter {
     private List<PlayListBean> mPlayList;
     private Items items = new Items();
 
+
     public FinPagerPresenter(BasePagerFragment basePagerFragmentView) {
         mBasePagerFragmentView = basePagerFragmentView;
         mPlayList = new ArrayList<>();
@@ -35,6 +36,7 @@ public class FinPagerPresenter {
             @Override
             public void accept(Throwable throwable) throws Exception {
                 Log.e(TAG, "accept: 加载数据失败");
+                mBasePagerFragmentView.setmLoadingDataSuccess(false);
             }
         }, () -> {
             Log.e(TAG, "加载完成" + mPlayList.size());
@@ -50,6 +52,9 @@ public class FinPagerPresenter {
     }
 
     public void getPageAllItems() {
+        if (items.size() > 0) {
+            items.clear();
+        }
         List<PlayListBean> tempList = new ArrayList<>();
         getPlayList();
         FindPageModel.getSingListContext().subscribe(playListBean -> {
@@ -59,6 +64,7 @@ public class FinPagerPresenter {
             @Override
             public void accept(Throwable throwable) throws Exception {
                 Log.e(TAG, "accept: 加载数据失败");
+                mBasePagerFragmentView.setmLoadingDataSuccess(false);
             }
         }, () -> {
             //加载数据完成

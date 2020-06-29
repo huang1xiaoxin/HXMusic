@@ -27,7 +27,8 @@ public abstract class BasePagerFragment extends Fragment {
     public boolean isFirstLoadData;
     public boolean isReuseView;
     private LinearLayout mLoadingLinearLayout;
-
+    //默认第一次加载是成功的
+    private boolean mLoadingDataSuccess = true;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +72,7 @@ public abstract class BasePagerFragment extends Fragment {
      * 支持每次显示都刷新数据
      */
 
-    private void fragmentEveryLoadingData() {
+    protected void fragmentEveryLoadingData() {
     }
 
     /**
@@ -185,5 +186,13 @@ public abstract class BasePagerFragment extends Fragment {
         super.onPause();
         //隐藏加载框
         hideLoading();
+    }
+
+    public boolean getmLoadingDataSuccess() {
+        return mLoadingDataSuccess;
+    }
+
+    public void setmLoadingDataSuccess(boolean mLoadingDataSuccess) {
+        this.mLoadingDataSuccess = mLoadingDataSuccess;
     }
 }
