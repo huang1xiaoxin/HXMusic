@@ -64,6 +64,7 @@ public class FinPagerPresenter {
             //加载数据完成
             //进行转化
             transformItems(tempList);
+            mBasePagerFragmentView.hideLoading();
             mBasePagerFragmentView.loadData(items);
         });
     }

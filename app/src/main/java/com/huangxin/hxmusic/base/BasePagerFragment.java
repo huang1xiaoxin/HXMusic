@@ -1,15 +1,23 @@
 package com.huangxin.hxmusic.base;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.huangxin.hxmusic.R;
 
 public abstract class BasePagerFragment extends Fragment {
     public Context context;
@@ -18,6 +26,7 @@ public abstract class BasePagerFragment extends Fragment {
     //是否已经初始化数据
     public boolean isFirstLoadData;
     public boolean isReuseView;
+    private LinearLayout mLoadingLinearLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,7 +38,9 @@ public abstract class BasePagerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return initView(inflater, container, savedInstanceState);
+        View view = initView(inflater, container, savedInstanceState);
+        initLoadingView(container);
+        return view;
     }
 
     /**
@@ -111,5 +122,68 @@ public abstract class BasePagerFragment extends Fragment {
 
     public void loadData(Items items) {
 
+    }
+
+    private void initLoadingView(View container) {
+        //布局的属性
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER;
+        mLoadingLinearLayout = new LinearLayout(getActivity());
+        mLoadingLinearLayout.setOrientation(LinearLayout.VERTICAL);
+        //默认是隐藏的
+        mLoadingLinearLayout.setVisibility(View.GONE);
+
+        //加载按钮的属性
+        FrameLayout.LayoutParams proLayoutParams = new FrameLayout.LayoutParams(
+                dip2dx(60), dip2dx(60)
+        );
+        ProgressBar progressBar = new ProgressBar(getActivity());
+        Drawable drawable = getActivity().getDrawable(R.drawable.progressbar);
+        progressBar.setIndeterminateDrawable(drawable);
+
+        //加载TextView的属性
+        FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        TextView textView = new TextView(getActivity());
+        textView.setGravity(Gravity.CENTER);
+        textView.setText("加载中...");
+        textView.setLayoutParams(textParams);
+        container.getContext().getApplicationContext();
+        //添加到View
+        getActivity().addContentView(mLoadingLinearLayout, layoutParams);
+
+        mLoadingLinearLayout.addView(progressBar, proLayoutParams);
+        mLoadingLinearLayout.addView(textView, textParams);
+
+    }
+
+    /**
+     * 隐藏正在加载
+     */
+    public void hideLoading() {
+        if (mLoadingLinearLayout != null && mLoadingLinearLayout.getVisibility() == View.VISIBLE) {
+            mLoadingLinearLayout.setVisibility(View.GONE);
+        }
+
+    }
+
+    /**
+     * 显示正在加载
+     */
+    public void showLoading() {
+        if (mLoadingLinearLayout != null && mLoadingLinearLayout.getVisibility() == View.GONE) {
+            mLoadingLinearLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private int dip2dx(int dp) {
+        float scan = context.getResources().getDisplayMetrics().density;
+        return (int) (scan * dp + 0.5f);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //隐藏加载框
+        hideLoading();
     }
 }

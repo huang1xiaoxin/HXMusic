@@ -46,6 +46,7 @@ public class FindPagerFragment extends BasePagerFragment {
 
     @Override
     protected void fragmentFirstLoadingData() {
+        showLoading();
         //加载数据
         pagerPresenter.getPageAllItems();
 
