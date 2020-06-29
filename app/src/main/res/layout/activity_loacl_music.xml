@@ -24,9 +24,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <ProgressBar
-            android:indeterminateDrawable="@drawable/progressbar"
+            android:indeterminate="false"
             android:layout_centerInParent="true"
             android:id="@+id/lm_pb"
+            android:indeterminateTint="#10000000"
             android:layout_width="60dp"
             android:layout_height="60dp"/>
         <TextView
