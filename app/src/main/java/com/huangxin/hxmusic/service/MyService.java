@@ -72,6 +72,7 @@ public class MyService extends Service {
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
             }
+
         }
 
         //开始播放歌曲
@@ -84,12 +85,11 @@ public class MyService extends Service {
             //重置
             mediaPlayer.reset();
             try {
-                mediaPlayer.setDataSource(playMusicList.get(index).getUrl());
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-                //添加播放历史的音乐
-                DataDo.getInstance(getApplicationContext()).addMusicData(ConstInterface.HISTORY_MUSIC_TABLE,
-                        playMusicList.get(index));
+                String url = playMusicList.get(index).getUrl();
+                //url="https://m7.music.126.net/20200630155937/ee27a12189e1a4d9be588085f4c0dbdf/ymusic/8972/6e6e/7b86/bddf788bf92e62d7c5c9aa457dd27bf5.mp3";
+                mediaPlayer.setDataSource(url);
+                //因为service中也是在主线程的,音乐在准备的时候需要时间，故放在异步
+                mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 Log.e(TAG, "播放失败");
                 e.printStackTrace();
@@ -104,7 +104,10 @@ public class MyService extends Service {
                     } else {
                         nextSong();
                     }
-                    updateInfoListener.updateInfo(CurrentIndex);
+                    if (updateInfoListener != null) {
+                        updateInfoListener.updateInfo(CurrentIndex);
+                    }
+
                     if (localActivityShow) {
                         updateInfoInLocalActivity.updateInfo(CurrentIndex);
                     }
@@ -119,6 +122,20 @@ public class MyService extends Service {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     return true;
+                }
+            });
+            //设置准备完歌曲后的实现
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mediaPlayer.start();
+                    //添加播放历史的音乐
+                    DataDo.getInstance(getApplicationContext()).addMusicData(ConstInterface.HISTORY_MUSIC_TABLE,
+                            playMusicList.get(index));
+                    if (updateInfoListener != null) {
+                        //更改UI信息
+                        updateInfoListener.updateInfo(index);
+                    }
                 }
             });
 

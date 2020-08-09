@@ -227,6 +227,7 @@ public class DetailMusicActivity extends AppCompatActivity {
         super.onDestroy();
         UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(updateDataInfoListener);
         mAnimation = null;
+        musicBinder.setUpdateInfoListener(null);
     }
 
     class MyOnClickListener implements View.OnClickListener {
@@ -245,11 +246,11 @@ public class DetailMusicActivity extends AppCompatActivity {
                     break;
                 case R.id.next_song_ib:
                     musicBinder.nextSong();
-                    initInfo();
+                    //initInfo();
                     break;
                 case R.id.last_song_ib:
                     musicBinder.lastSong();
-                    initInfo();
+                    //initInfo();
                     break;
                 case R.id.play_model_ib:
                     modelTag++;

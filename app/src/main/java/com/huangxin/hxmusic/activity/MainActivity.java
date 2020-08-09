@@ -132,15 +132,6 @@ public class MainActivity extends AppCompatActivity {
             musicViewPager.setSongs(songList);
             changeSongViewPager.setAdapter(musicViewPager);
         }
-        if (isRestartActivity) {
-            changeSongViewPager.setCurrentItem(musicBinder.getCurrentIndex(), false);
-            isRestartActivity = false;
-            if (musicBinder.isPlaying()) {
-                startAndStopButton.setImageResource(R.drawable.stop);
-            } else {
-                startAndStopButton.setImageResource(R.drawable.start);
-            }
-        }
     }
 
     @Override
@@ -157,6 +148,16 @@ public class MainActivity extends AppCompatActivity {
             myMusicPager.getBanner().start();
         }
         UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);
+
+        if (musicBinder.getCurrentIndex() != -1) {
+            changeSongViewPager.setCurrentItem(musicBinder.getCurrentIndex(), false);
+        }
+        isRestartActivity = false;
+        if (musicBinder.isPlaying()) {
+            startAndStopButton.setImageResource(R.drawable.stop);
+        } else {
+            startAndStopButton.setImageResource(R.drawable.start);
+        }
     }
 
     @Override

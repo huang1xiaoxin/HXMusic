@@ -139,16 +139,14 @@ public class LocalMusicActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isOnStartUpdateViewPage) {
-            //处理从其他页面跳转过来的时候设置底部的ui
-            viewPager.setCurrentItem(musicBinder.getCurrentIndex(), false);
-            if (musicBinder.isPlaying()) {
-                startAndStopButton.setImageResource(R.drawable.stop);
-            } else {
-                startAndStopButton.setImageResource(R.drawable.start);
-            }
-            isOnStartUpdateViewPage = false;
+        //处理从其他页面跳转过来的时候设置底部的ui
+        viewPager.setCurrentItem(musicBinder.getCurrentIndex(), false);
+        if (musicBinder.isPlaying()) {
+            startAndStopButton.setImageResource(R.drawable.stop);
+        } else {
+            startAndStopButton.setImageResource(R.drawable.start);
         }
+        isOnStartUpdateViewPage = false;
         musicBinder.setLocalActivityShow(true);
         //设置在弹窗中更改数据时 更新ViewPager
         UpdateDataInfo.getINSTANCE().registerUpdateInfoListener(listener);

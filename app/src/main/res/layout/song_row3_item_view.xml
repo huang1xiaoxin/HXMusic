@@ -60,7 +60,6 @@
         <TextView
             android:id="@+id/text_view_desc3"
             style="@style/Row3_text_style" />
-
     </LinearLayout>
 
 

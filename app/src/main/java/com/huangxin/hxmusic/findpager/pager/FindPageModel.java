@@ -1,10 +1,12 @@
 package com.huangxin.hxmusic.findpager.pager;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.huangxin.hxmusic.findpager.pager.bean.PlayListBean;
 import com.huangxin.hxmusic.retrofit.IRetrofitRequest;
 import com.huangxin.hxmusic.retrofit.RetrofitRequest;
+import com.huangxin.hxmusic.utils.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,4 +71,21 @@ public class FindPageModel {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    //更据歌曲的Id获取歌曲
+    private static Observable<Song> getSongContext(String id) {
+        return RetrofitRequest.getBaseRetrofit().
+                create(IRetrofitRequest.class).getSongRetrofit(id);
+    }
+
+    //更据歌单来获取，实质是通过id
+    @SuppressLint("CheckResult")
+    public static Observable<Song> getSongContext(List<PlayListBean.PlaylistBean.TracksBean> tracksBeans) {
+        return Observable.fromIterable(tracksBeans).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
+                .concatMap(new Function<PlayListBean.PlaylistBean.TracksBean, ObservableSource<Song>>() {
+                    @Override
+                    public ObservableSource<Song> apply(PlayListBean.PlaylistBean.TracksBean tracksBean) throws Exception {
+                        return getSongContext(tracksBean.getId() + "");
+                    }
+                });
+    }
 }

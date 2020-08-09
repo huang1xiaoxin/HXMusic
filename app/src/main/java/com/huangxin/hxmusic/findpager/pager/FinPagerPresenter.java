@@ -9,10 +9,12 @@ import com.huangxin.hxmusic.findpager.pager.MultiType.SingSongItemData;
 import com.huangxin.hxmusic.findpager.pager.MultiType.SinglePlayListData;
 import com.huangxin.hxmusic.findpager.pager.MultiType.TitleItemData;
 import com.huangxin.hxmusic.findpager.pager.bean.PlayListBean;
+import com.huangxin.hxmusic.utils.Song;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
 public class FinPagerPresenter {
@@ -100,6 +102,28 @@ public class FinPagerPresenter {
         }
         return items;
 
+    }
+
+    //获取单首歌曲
+    public void getSong(List<PlayListBean.PlaylistBean.TracksBean> tracksBeans) {
+        List<Song> songs = new ArrayList<>();
+        FindPageModel.getSongContext(tracksBeans).subscribe((song) -> {
+            songs.add(song);
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                //接受数据失败
+                Log.e(TAG, "accept: 歌曲加载失败");
+
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                //接受数据成功
+                Log.e(TAG, "run: 歌曲加载成功");
+
+            }
+        });
     }
 
     public List<PlayListBean> getmPlayList() {
