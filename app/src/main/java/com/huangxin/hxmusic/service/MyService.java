@@ -46,12 +46,6 @@ public class MyService extends Service {
         return musicBinder;
     }
 
-    @Override
-    public void onDestroy() {
-        musicBinder.onDestroy();
-        super.onDestroy();
-    }
-
     //定义一个播放完变成下一曲的更新信息的接口
     public interface UpdateInfoListener {
         void updateInfo(int index);
@@ -271,10 +265,6 @@ public class MyService extends Service {
 
         public void setMainActivityShow(boolean mainActivityShow) {
             this.mainActivityShow = mainActivityShow;
-        }
-
-        public void onDestroy() {
-            // viewControlObserver.clean();
         }
 
         public ViewControlObserver getViewControlObserver() {

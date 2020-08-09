@@ -39,14 +39,6 @@ public class ViewControlObserver {
         }
     }
 
-    /**
-     * 清空所有的注册者
-     */
-//    public void clean() {
-//        if (buttonStateSubjectList != null && buttonStateSubjectList.size() > 0) {
-//            buttonStateSubjectList = null;
-//        }
-//    }
 
     /**
      * 通知所有的观察者按钮的状态发生改变

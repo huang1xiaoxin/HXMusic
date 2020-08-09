@@ -44,7 +44,7 @@ public class LauncherActivity extends AppCompatActivity {
             public void run() {
                 startActivity();
             }
-        }, 2000);
+        }, 500);
         Intent intent = new Intent(LauncherActivity.this, MyService.class);
         // BIND_AUTO_CREATE代表若服务不存在实例则创建实例
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
