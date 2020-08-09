@@ -25,6 +25,8 @@ import com.huangxin.hxmusic.findpager.pager.FindPagerFragment;
 import com.huangxin.hxmusic.mvpager.pager.MVPagerFragment;
 import com.huangxin.hxmusic.mymusic.fragment.MyMusicPagerFragment;
 import com.huangxin.hxmusic.service.MyService;
+import com.huangxin.hxmusic.utils.ButtonStateSubject;
+import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
 import com.huangxin.hxmusic.utils.UpdateDataInfo;
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private RadioGroup radioGroup;
     private MyMusicPagerFragment myMusicPager;
-    private ImageButton startAndStopButton;
+    private static ImageButton startAndStopButton;
     private ViewPager changeSongViewPager;
     private LinearLayout sampleStartLinearLayout;
     private MyMusicViewPager musicViewPager;
@@ -59,42 +61,16 @@ public class MainActivity extends AppCompatActivity {
             changeSongViewPager.setCurrentItem(position, false);
         }
     };
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        //先获取bundle对象，然后再通过Bundle对象获得MusicBinder对象
-        Bundle musicBundle = getIntent().getBundleExtra("MusicBundle");
-        musicBinder = (MyService.MusicBinder) musicBundle.getBinder("MusicBinder");
-        initViewPager();
-        initPermission();
-        viewPager = findViewById(R.id.am_viewpager);
-        radioGroup = findViewById(R.id.radio_group);
-        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, pagerArrayList));
-        viewPager.addOnPageChangeListener(new MyOnPageChangeListener());
-        radioGroup.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        //设置默认的页面
-        viewPager.setCurrentItem(0, false);
-        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(0);
-        radioButton.setChecked(true);
-        startAndStopButton = findViewById(R.id.ib_start_stop);
-        changeSongViewPager = findViewById(R.id.vp_change_song);
-        currentSongList = findViewById(R.id.current_list_pw);
-        sampleStartLinearLayout = findViewById(R.id.ly_sample_start_music);
-        sampleStartLinearLayout.setVisibility(View.GONE);
-        musicViewPager = new MyMusicViewPager(songList, MainActivity.this, musicBinder);
-        changeSongViewPager.addOnPageChangeListener(new MyMusicOnPageChangeListener());
-        startAndStopButton.setOnClickListener(new MyMainActivityOnClickListener());
-        musicBinder.setUpdateInfoInMainActivity(new MyService.UpdateInfoInMainActivity() {
-            @Override
-            public void updateInfo(int index) {
-                changeSongViewPager.setCurrentItem(index, false);
+    private static ButtonStateSubject stateSubject = new ButtonStateSubject() {
+        @Override
+        public void updateButtonState(int state) {
+            if (state == ConstInterface.STARE_PAUSE) {
+                startAndStopButton.setImageResource(R.drawable.start);
+            } else if (state == ConstInterface.STARE_PLAYING) {
+                startAndStopButton.setImageResource(R.drawable.stop);
             }
-        });
-        currentSongList.setOnClickListener(new MyMainActivityOnClickListener());
-    }
+        }
+    };
 
     /**
      * 初始化各个页面
@@ -141,6 +117,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        //先获取bundle对象，然后再通过Bundle对象获得MusicBinder对象
+        Bundle musicBundle = getIntent().getBundleExtra("MusicBundle");
+        musicBinder = (MyService.MusicBinder) musicBundle.getBinder("MusicBinder");
+        initViewPager();
+        initPermission();
+        musicBinder.getViewControlObserver().subscribe(stateSubject);
+        viewPager = findViewById(R.id.am_viewpager);
+        radioGroup = findViewById(R.id.radio_group);
+        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, pagerArrayList));
+        viewPager.addOnPageChangeListener(new MyOnPageChangeListener());
+        radioGroup.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        //设置默认的页面
+        viewPager.setCurrentItem(0, false);
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(0);
+        radioButton.setChecked(true);
+        startAndStopButton = findViewById(R.id.ib_start_stop);
+        changeSongViewPager = findViewById(R.id.vp_change_song);
+        currentSongList = findViewById(R.id.current_list_pw);
+        sampleStartLinearLayout = findViewById(R.id.ly_sample_start_music);
+        sampleStartLinearLayout.setVisibility(View.GONE);
+        musicViewPager = new MyMusicViewPager(songList, MainActivity.this, musicBinder);
+        changeSongViewPager.addOnPageChangeListener(new MyMusicOnPageChangeListener());
+        startAndStopButton.setOnClickListener(new MyMainActivityOnClickListener());
+        musicBinder.setUpdateInfoInMainActivity(new MyService.UpdateInfoInMainActivity() {
+            @Override
+            public void updateInfo(int index) {
+                changeSongViewPager.setCurrentItem(index, false);
+            }
+        });
+        currentSongList.setOnClickListener(new MyMainActivityOnClickListener());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        musicBinder.setMainActivityShow(false);
+        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         musicBinder.setMainActivityShow(true);
@@ -153,23 +172,7 @@ public class MainActivity extends AppCompatActivity {
             changeSongViewPager.setCurrentItem(musicBinder.getCurrentIndex(), false);
         }
         isRestartActivity = false;
-        if (musicBinder.isPlaying()) {
-            startAndStopButton.setImageResource(R.drawable.stop);
-        } else {
-            startAndStopButton.setImageResource(R.drawable.start);
-        }
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        musicBinder.setMainActivityShow(false);
-        UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(listener);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     @Override
@@ -253,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
             if (!isRestartActivity) {
                 changeSongViewPager.setCurrentItem(position, false);
                 musicBinder.startPlayer(position);
-                startAndStopButton.setImageResource(R.drawable.stop);
             }
         }
 
@@ -270,10 +272,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.ib_start_stop:
                     if (musicBinder.isPlaying()) {
                         musicBinder.pauseMusic();
-                        startAndStopButton.setImageResource(R.drawable.start);
                     } else {
                         musicBinder.startMusic();
-                        startAndStopButton.setImageResource(R.drawable.stop);
                     }
                     break;
                 case R.id.current_list_pw:
@@ -284,5 +284,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        musicBinder.getViewControlObserver().unSubscribe(stateSubject);
     }
 }

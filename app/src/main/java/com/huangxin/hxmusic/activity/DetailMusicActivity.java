@@ -21,6 +21,7 @@ import com.huangxin.hxmusic.Database.DataDo;
 import com.huangxin.hxmusic.PopupWindow.ShowPopupWindow;
 import com.huangxin.hxmusic.R;
 import com.huangxin.hxmusic.service.MyService;
+import com.huangxin.hxmusic.utils.ButtonStateSubject;
 import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
 import com.huangxin.hxmusic.utils.UpdateDataInfo;
@@ -36,7 +37,7 @@ public class DetailMusicActivity extends AppCompatActivity {
     private MyService.MusicBinder musicBinder;
     private ImageButton nextButton;
     private ImageButton lastButton;
-    private ImageButton startAndStopButton;
+    private static ImageButton startAndStopButton;
     private ImageButton playMode;
     private ImageButton songListButton;
     private ImageButton addLikeButton;
@@ -74,6 +75,17 @@ public class DetailMusicActivity extends AppCompatActivity {
             }
         }
     };
+
+    private static ButtonStateSubject stateSubject = new ButtonStateSubject() {
+        @Override
+        public void updateButtonState(int state) {
+            if (state == ConstInterface.STARE_PAUSE) {
+                startAndStopButton.setImageResource(R.drawable.start_music);
+            } else if (state == ConstInterface.STARE_PLAYING) {
+                startAndStopButton.setImageResource(R.drawable.stop_music);
+            }
+        }
+    };
     //启动计时更新进度条
     private TimerTask timerTask = new TimerTask() {
         @Override
@@ -101,6 +113,7 @@ public class DetailMusicActivity extends AppCompatActivity {
                 initInfo();
             }
         });
+        musicBinder.getViewControlObserver().subscribe(stateSubject);
         currentIndex = musicBinder.getCurrentIndex();
         songList = musicBinder.getPlayMusicList();
         //开启动画
@@ -110,6 +123,12 @@ public class DetailMusicActivity extends AppCompatActivity {
         initView();
         //开启计时器
         timer.schedule(timerTask, 0, 500);
+        int state = musicBinder.getViewControlObserver().getState();
+        if (state == ConstInterface.STARE_PAUSE) {
+            startAndStopButton.setImageResource(R.drawable.start_music);
+        } else if (state == ConstInterface.STARE_PLAYING) {
+            startAndStopButton.setImageResource(R.drawable.stop_music);
+        }
 
     }
 
@@ -152,11 +171,6 @@ public class DetailMusicActivity extends AppCompatActivity {
                 imageView.setImageBitmap(bitmap);
             } else {
                 imageView.setImageResource(R.drawable.default_image);
-            }
-            if (musicBinder.isPlaying()) {
-                startAndStopButton.setImageResource(R.drawable.stop_music);
-            } else {
-                startAndStopButton.setImageResource(R.drawable.start_music);
             }
             artistText.setText(songList.get(currentIndex).getArtist());
             titleText.setText(songList.get(currentIndex).getTitle());
@@ -228,6 +242,7 @@ public class DetailMusicActivity extends AppCompatActivity {
         UpdateDataInfo.getINSTANCE().unRegisterUpdateBottomViewPageListener(updateDataInfoListener);
         mAnimation = null;
         musicBinder.setUpdateInfoListener(null);
+        musicBinder.getViewControlObserver().unSubscribe(stateSubject);
     }
 
     class MyOnClickListener implements View.OnClickListener {
@@ -238,10 +253,8 @@ public class DetailMusicActivity extends AppCompatActivity {
                 case R.id.ib_start_stop_ib:
                     if (musicBinder.isPlaying()) {
                         musicBinder.pauseMusic();
-                        startAndStopButton.setImageResource(R.drawable.start_music);
                     } else {
                         musicBinder.startMusic();
-                        startAndStopButton.setImageResource(R.drawable.stop_music);
                     }
                     break;
                 case R.id.next_song_ib:

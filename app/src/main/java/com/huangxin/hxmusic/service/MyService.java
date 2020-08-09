@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.huangxin.hxmusic.Database.DataDo;
 import com.huangxin.hxmusic.utils.ConstInterface;
 import com.huangxin.hxmusic.utils.Song;
+import com.huangxin.hxmusic.utils.ViewControlObserver;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,12 +21,16 @@ import java.util.List;
 public class MyService extends Service {
     private final static String TAG = "MyService";
     private MediaPlayer mediaPlayer;
+    private ViewControlObserver viewControlObserver;
 
     private MusicBinder musicBinder = new MusicBinder();
 
     public MyService() {
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
+        }
+        if (viewControlObserver == null) {
+            viewControlObserver = new ViewControlObserver();
         }
     }
 
@@ -38,8 +43,13 @@ public class MyService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-
         return musicBinder;
+    }
+
+    @Override
+    public void onDestroy() {
+        musicBinder.onDestroy();
+        super.onDestroy();
     }
 
     //定义一个播放完变成下一曲的更新信息的接口
@@ -68,9 +78,13 @@ public class MyService extends Service {
         private boolean mainActivityShow = false;
         private UpdateInfoInMainActivity updateInfoInMainActivity;
 
+
         public MusicBinder() {
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
+            }
+            if (viewControlObserver == null) {
+                viewControlObserver = new ViewControlObserver();
             }
 
         }
@@ -90,6 +104,7 @@ public class MyService extends Service {
                 mediaPlayer.setDataSource(url);
                 //因为service中也是在主线程的,音乐在准备的时候需要时间，故放在异步
                 mediaPlayer.prepareAsync();
+                viewControlObserver.updateButtonState(ConstInterface.STARE_PLAYING);
             } catch (IOException e) {
                 Log.e(TAG, "播放失败");
                 e.printStackTrace();
@@ -189,11 +204,13 @@ public class MyService extends Service {
 
         //开始
         public void startMusic() {
+            viewControlObserver.updateButtonState(ConstInterface.STARE_PLAYING);
             mediaPlayer.start();
         }
 
         //暂停
         public void pauseMusic() {
+            viewControlObserver.updateButtonState(ConstInterface.STARE_PAUSE);
             mediaPlayer.pause();
         }
 
@@ -254,6 +271,14 @@ public class MyService extends Service {
 
         public void setMainActivityShow(boolean mainActivityShow) {
             this.mainActivityShow = mainActivityShow;
+        }
+
+        public void onDestroy() {
+            // viewControlObserver.clean();
+        }
+
+        public ViewControlObserver getViewControlObserver() {
+            return viewControlObserver;
         }
     }
 
