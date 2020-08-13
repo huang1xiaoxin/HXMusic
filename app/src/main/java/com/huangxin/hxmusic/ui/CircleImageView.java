@@ -91,22 +91,22 @@ public class CircleImageView extends ImageView {
 
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //支持wrapContent
-        int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
-        if (widthSpecMode == MeasureSpec.AT_MOST && heightMeasureSpec == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(100, 100);
-        } else if (widthSpecMode == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(100, heightSpecSize);
-        } else if (heightSpecMode == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(widthSpecSize, 100);
-        }
-    }
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        //支持wrapContent
+//        int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
+//        int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
+//        int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
+//        int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
+//        if (widthSpecMode == MeasureSpec.AT_MOST && heightMeasureSpec == MeasureSpec.AT_MOST) {
+//            setMeasuredDimension(100, 100);
+//        } else if (widthSpecMode == MeasureSpec.AT_MOST) {
+//            setMeasuredDimension(100, heightSpecSize);
+//        } else if (heightSpecMode == MeasureSpec.AT_MOST) {
+//            setMeasuredDimension(widthSpecSize, 100);
+//        }
+//    }
 
     /**
      * 在onDraw中不要有过多复杂的逻辑，和过于复杂多余的计算，否则会导致绘制不全的现象
@@ -257,117 +257,9 @@ public class CircleImageView extends ImageView {
         return new BitmapShader(bitmap, tileModeX, tileModeY);
 
     }
-
-    public int getTileX() {
-        return mTileX;
-    }
-
-    public void setTileX(int mTileX) {
-        this.mTileX = mTileX;
-    }
-
-    public int getTileY() {
-        return mTileY;
-    }
-
-    public void setTileY(int mTileY) {
-        this.mTileY = mTileY;
-    }
-
-    public Paint getmPaint() {
-        return mPaint;
-    }
-
-    public void setmPaint(Paint mPaint) {
-        this.mPaint = mPaint;
-    }
-
-    public Bitmap getmRawBitmap() {
-        return mRawBitmap;
-    }
-
-    public void setmRawBitmap(Bitmap mRawBitmap) {
-        this.mRawBitmap = mRawBitmap;
-    }
-
-    public BitmapShader getmShader() {
-        return mShader;
-    }
-
-    public void setmShader(BitmapShader mShader) {
-        this.mShader = mShader;
-    }
-
     @Override
     public Matrix getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(Matrix matrix) {
-        this.matrix = matrix;
-    }
-
-    public Paint getmBorderPaint() {
-        return mBorderPaint;
-    }
-
-    public void setmBorderPaint(Paint mBorderPaint) {
-        this.mBorderPaint = mBorderPaint;
-    }
-
-    public RectF getmRectBorder() {
-        return mRectBorder;
-    }
-
-    public void setmRectBorder(RectF mRectBorder) {
-        this.mRectBorder = mRectBorder;
-    }
-
-    public RectF getmRectBitmap() {
-        return mRectBitmap;
-    }
-
-    public void setmRectBitmap(RectF mRectBitmap) {
-        this.mRectBitmap = mRectBitmap;
-    }
-
-    public int getmBorderWidth() {
-        return mBorderWidth;
-    }
-
-    public void setmBorderWidth(int mBorderWidth) {
-        this.mBorderWidth = mBorderWidth;
-    }
-
-    public int getmBorderColor() {
-        return mBorderColor;
-    }
-
-    public void setmBorderColor(int mBorderColor) {
-        this.mBorderColor = mBorderColor;
-    }
-
-    public boolean isCreateBorder() {
-        return createBorder;
-    }
-
-    public void setCreateBorder(boolean createBorder) {
-        this.createBorder = createBorder;
-    }
-
-    public int getmRoundRadius() {
-        return mRoundRadius;
-    }
-
-    public void setmRoundRadius(int mRoundRadius) {
-        this.mRoundRadius = mRoundRadius;
-    }
-
-    public int getmShapeType() {
-        return mShapeType;
-    }
-
-    public void setmShapeType(int mShapeType) {
-        this.mShapeType = mShapeType;
-    }
 }
