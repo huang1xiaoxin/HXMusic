@@ -88,7 +88,7 @@ public class CircleImageView extends ImageView {
         createBorder = array.getBoolean(R.styleable.CircleImageView_createBorder, false);
         mShapeType = array.getInt(R.styleable.CircleImageView_mShapeType, CIRCLE);
         mRoundRadius = array.getDimensionPixelOffset(R.styleable.CircleImageView_mRoundRadius, 10);
-
+        array.recycle();
     }
     /**
      * 在onDraw中不要有过多复杂的逻辑，和过于复杂多余的计算，否则会导致绘制不全的现象
@@ -106,6 +106,7 @@ public class CircleImageView extends ImageView {
             final int paddingRight = getPaddingRight();
             final int paddingTop = getPaddingTop();
             final int paddingBottom = getPaddingBottom();
+            //获取实质的宽度
             float width = getWidth() - paddingLeft - paddingRight;
             float height = getHeight() - paddingTop - paddingBottom;
             float diameter = Math.min(width, height);
