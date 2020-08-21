@@ -177,6 +177,7 @@ public class LocalMusicActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         musicBinder.getViewControlObserver().unSubscribe(stateSubject);
+        startAndStopButton=null;
     }
 
     /**

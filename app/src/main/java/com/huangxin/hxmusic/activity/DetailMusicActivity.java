@@ -243,6 +243,8 @@ public class DetailMusicActivity extends AppCompatActivity {
         mAnimation = null;
         musicBinder.setUpdateInfoListener(null);
         musicBinder.getViewControlObserver().unSubscribe(stateSubject);
+        //防止内存泄露
+        startAndStopButton=null;
     }
 
     class MyOnClickListener implements View.OnClickListener {
